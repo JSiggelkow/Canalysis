@@ -42,7 +42,7 @@ function ResultsList() {
                 );
             case 'completed':
                 return (
-                    <Chip variant="soft" color="secondary">
+                    <Chip variant="soft" color="accent">
                         (ai deep search)
                     </Chip>
                 );
@@ -78,7 +78,7 @@ function ResultsList() {
         return (
             <div className="p-8 flex flex-col items-center justify-center min-h-[400px] gap-4">
                 <p className="text-xl text-default-500">Result for "{fileParam}" not found.</p>
-                <Button onPress={() => router.push('/results')} variant="flat">
+                <Button onPress={() => router.push('/results')} variant="secondary">
                     Show all results
                 </Button>
             </div>
@@ -93,60 +93,65 @@ function ResultsList() {
                         id={index.toString()}
                         key={index}
                         aria-label={result.fileName}
-                        title={
-                            <div className="flex justify-between items-center w-full pr-4">
-                                <span className="text-sm font-medium truncate max-w-[400px]">{result.fileName}</span>
-                                {getStatusChip(result.status)}
-                            </div>
-                        }
                     >
-                        <div className="p-2 flex flex-col gap-4 text-sm">
-                            {result.status === 'running' && (
-                                <div className="flex flex-col gap-2 items-center py-4">
-                                    <Spinner size="md" color="warning"/>
-                                    <p className="text-default-500 animate-pulse">Analyzing file...</p>
+                        <Accordion.Heading>
+                            <Accordion.Trigger>
+                                <div className="flex justify-between items-center w-full pr-4">
+                                    <span className="text-sm font-medium truncate max-w-[400px]">{result.fileName}</span>
+                                    {getStatusChip(result.status)}
                                 </div>
-                            )}
-
-                            {result.keywords.length > 0 && (
-                                <div>
-                                    <p className="font-semibold mb-2">Found Keywords:</p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {result.keywords.map((k, i) => (
-                                            <Chip key={i} size="sm" variant="secondary">
-                                                {k.keyword} (Page {k.page === 0 ? 'N/A' : k.page})
-                                            </Chip>
-                                        ))}
+                                <Accordion.Indicator />
+                            </Accordion.Trigger>
+                        </Accordion.Heading>
+                        <Accordion.Panel>
+                            <div className="p-2 flex flex-col gap-4 text-sm">
+                                {result.status === 'running' && (
+                                    <div className="flex flex-col gap-2 items-center py-4">
+                                        <Spinner size="md" color="warning"/>
+                                        <p className="text-default-500 animate-pulse">Analyzing file...</p>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            {result.aiResult && (
-                                <div>
-                                    <p className="font-semibold mb-1">AI Analysis Result:</p>
-                                    <div
-                                        className="bg-default-50 p-3 rounded-lg border border-default-200 whitespace-pre-wrap">
-                                        {result.aiResult === "Nicht gefunden." ? (
-                                            <span
-                                                className="text-default-400 italic">No relevant content found by AI.</span>
-                                        ) : (
-                                            result.aiResult
-                                        )}
+                                {result.keywords.length > 0 && (
+                                    <div>
+                                        <p className="font-semibold mb-2">Found Keywords:</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {result.keywords.map((k, i) => (
+                                                <Chip key={i} size="sm" variant="secondary">
+                                                    {k.keyword} (Page {k.page === 0 ? 'N/A' : k.page})
+                                                </Chip>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                            {result.error && (
-                                <div className="text-danger bg-danger-50 p-3 rounded-lg border border-danger-200">
-                                    {result.error}
-                                </div>
-                            )}
+                                {result.aiResult && (
+                                    <div>
+                                        <p className="font-semibold mb-1">AI Analysis Result:</p>
+                                        <div
+                                            className="bg-default-50 p-3 rounded-lg border border-default-200 whitespace-pre-wrap">
+                                            {result.aiResult === "Nicht gefunden." ? (
+                                                <span
+                                                    className="text-default-400 italic">No relevant content found by AI.</span>
+                                            ) : (
+                                                result.aiResult
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
 
-                            {(result.status === 'completed' || result.status === 'no_content_found') && !result.aiResult && result.keywords.length === 0 && (
-                                <p className="text-default-400 italic">Deep Search initiated: No keywords found by
-                                    direct match.</p>
-                            )}
-                        </div>
+                                {result.error && (
+                                    <div className="text-danger bg-danger-50 p-3 rounded-lg border border-danger-200">
+                                        {result.error}
+                                    </div>
+                                )}
+
+                                {(result.status === 'completed' || result.status === 'no_content_found') && !result.aiResult && result.keywords.length === 0 && (
+                                    <p className="text-default-400 italic">Deep Search initiated: No keywords found by
+                                        direct match.</p>
+                                )}
+                            </div>
+                        </Accordion.Panel>
                     </Accordion.Item>
                 ))}
             </Accordion>

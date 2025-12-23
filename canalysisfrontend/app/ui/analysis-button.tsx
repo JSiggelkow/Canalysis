@@ -5,14 +5,17 @@ import {analyzeFileAction} from "@/app/actions/analyze";
 import {FileAnalysisResult} from "@/app/types/input";
 import {useAnalysis} from "@/app/context/AnalysisContext";
 import Link from "next/link";
+import React from "react";
+
+import {FileWithPrompt} from "@/app/page";
 
 interface AnalysisProps {
-    files: File[];
-    setFiles: React.Dispatch<React.SetStateAction<File[]>>;
+    files: FileWithPrompt[];
+    setFiles: React.Dispatch<React.SetStateAction<FileWithPrompt[]>>;
 }
 
 export function StartAnalysisButton({ files, setFiles }: AnalysisProps) {
-    const { setResults, loading, setLoading, setCurrentFile, keywords, prompts, selectedPromptId } = useAnalysis();
+    const { setResults, loading, setLoading, setCurrentFile, keywords, prompts } = useAnalysis();
 
     const handleAnalysis = async () => {
         if (files.length === 0) {
@@ -20,18 +23,20 @@ export function StartAnalysisButton({ files, setFiles }: AnalysisProps) {
             return;
         }
 
-        const selectedPrompt = prompts.find(p => p.id === selectedPromptId);
-        if (!selectedPrompt) {
-            alert("Please select a prompt in settings.");
-            return;
-        }
-
         setLoading(true);
-        console.log(`Starting analysis for ${files.length} files with ${keywords.length} keywords and prompt "${selectedPrompt.name}"...`);
+        console.log(`Starting analysis for ${files.length} files...`);
 
         const filesToAnalyze = [...files];
 
-        for (const file of filesToAnalyze) {
+        for (const item of filesToAnalyze) {
+            const file = item.file;
+            const selectedPrompt = prompts.find(p => p.id === item.promptId);
+            
+            if (!selectedPrompt) {
+                console.warn(`Prompt with id ${item.promptId} not found for file ${file.name}, skipping.`);
+                continue;
+            }
+
             setCurrentFile(file.name);
             
             setResults(prev => [...prev, {
@@ -57,7 +62,7 @@ export function StartAnalysisButton({ files, setFiles }: AnalysisProps) {
                     res.fileName === file.name ? result : res
                 ));
 
-                setFiles(prev => prev.filter(f => f !== file));
+                setFiles(prev => prev.filter(f => f.file !== file));
             } catch (e: unknown) {
                 const errorMessage = e instanceof Error ? e.message : "Error during analysis";
                 console.error(`Error with ${file.name}:`, e);
@@ -69,7 +74,7 @@ export function StartAnalysisButton({ files, setFiles }: AnalysisProps) {
                         error: errorMessage
                     } : res
                 ));
-                setFiles(prev => prev.filter(f => f !== file));
+                setFiles(prev => prev.filter(f => f.file !== file));
             }
         }
 

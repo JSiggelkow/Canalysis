@@ -1,7 +1,7 @@
 'use client'
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { FileAnalysisResult } from '@/app/types/input';
+import React, {createContext, useContext, useState, ReactNode} from 'react';
+import {FileAnalysisResult} from '@/app/types/input';
 
 export interface Prompt {
     id: string;
@@ -35,7 +35,7 @@ const DEFAULT_KEYWORDS = [
 const DEFAULT_PROMPTS: Prompt[] = [
     {
         id: 'default-de',
-        name: 'German Default',
+        name: 'German',
         language: 'de',
         content: `Sie analysieren ein Lehrplan-Dokument in deutscher Sprache im Rahmen einer wissenschaftlichen Studie darüber, wie Mehrsprachigkeit in Lehramtsstudiengängen behandelt wird. Konzentrieren Sie sich dabei ausschließlich darauf, was angehenden Lehrkräften über Mehrsprachigkeit, sprachliche Vielfalt oder die Arbeit mit mehrsprachigen Schülern vermittelt wird. 
 Analysieren Sie nicht die Unterrichtssprache, die mehrsprachige Gestaltung des Programms oder die Sprache der Prüfungen. Suchen Sie sowohl nach expliziten Erwähnungen als auch nach impliziten Verweisen in deutscher Sprache auf die folgenden Begriffe oder verwandte Konzepte: 
@@ -44,7 +44,7 @@ Wenn keine relevanten Inhalte gefunden werden, geben Sie bitte genau Folgendes a
     },
     {
         id: 'default-en',
-        name: 'English Default',
+        name: 'English',
         language: 'en',
         content: `You are analyzing a curriculum document written in English as part of an academic study on how multilingualism is addressed in teacher education programs.
 Focus strictly on what pre-service teachers are taught about multilingualism, linguistic diversity, or working with multilingual students. Do not analyze the language of instruction, the multilingual design of the program, or the language of examinations.
@@ -58,7 +58,7 @@ If relevant content is found, return only the exact phrase found in the original
 
 const AnalysisContext = createContext<AnalysisContextType | undefined>(undefined);
 
-export function AnalysisProvider({ children }: { children: ReactNode }) {
+export function AnalysisProvider({children}: { children: ReactNode }) {
     const [results, setResults] = useState<FileAnalysisResult[]>([]);
     const [loading, setLoading] = useState(false);
     const [currentFile, setCurrentFile] = useState<string | null>(null);
@@ -67,9 +67,9 @@ export function AnalysisProvider({ children }: { children: ReactNode }) {
     const [selectedPromptId, setSelectedPromptId] = useState<string>('default-de');
 
     return (
-        <AnalysisContext.Provider value={{ 
-            results, setResults, 
-            loading, setLoading, 
+        <AnalysisContext.Provider value={{
+            results, setResults,
+            loading, setLoading,
             currentFile, setCurrentFile,
             keywords, setKeywords,
             prompts, setPrompts,

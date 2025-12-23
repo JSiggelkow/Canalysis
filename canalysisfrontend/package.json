@@ -13,6 +13,7 @@
     "@ai-sdk/react": "^2.0.118",
     "@heroui/react": "^3.0.0-beta.3",
     "@heroui/styles": "^3.0.0-beta.3",
+    "@napi-rs/canvas": "^0.1.85",
     "@tabler/icons-react": "^3.36.0",
     "ai": "^5.0.116",
     "next": "16.1.0",

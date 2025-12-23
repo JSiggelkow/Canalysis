@@ -1,15 +1,18 @@
-'use client'; // Wichtig: Muss jetzt eine Client Component sein
+'use client';
 
 import { useState } from "react";
 import { StartAnalysisButton, AnalysisHistory } from "@/app/ui/analysis-button";
 import UploadCourseOutlines from "@/app/ui/upload-course-outlines";
 import { Button } from "@heroui/react";
-import { IconSettings } from "@tabler/icons-react";
 import Link from "next/link";
 
+export interface FileWithPrompt {
+    file: File;
+    promptId: string;
+}
+
 export default function Home() {
-  // Der State liegt jetzt hier oben
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<FileWithPrompt[]>([]);
 
   return (
     <main className="w-screen h-screen flex items-center justify-center p-8 overflow-hidden bg-default-50">
@@ -30,11 +33,10 @@ export default function Home() {
             
             <Link href="/settings">
               <Button 
-                variant="flat" 
+                variant="secondary"
                 className="w-full" 
-                startContent={<IconSettings size={18}/>}
               >
-                Analysis Settings (Keywords & Prompts)
+                Analysis Settings
               </Button>
             </Link>
           </div>

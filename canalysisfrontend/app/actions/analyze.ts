@@ -4,8 +4,6 @@ import {openai} from "@ai-sdk/openai";
 import { PDFParse } from "pdf-parse";
 import {FileAnalysisResult, KeywordMatch} from "@/app/types/input";
 import {generateText} from "ai";
-import path from "node:path";
-import { pathToFileURL } from "node:url";
 
 export async function analyzeFileAction(formData: FormData): Promise<FileAnalysisResult> {
     const file = formData.get("file") as File;
@@ -27,9 +25,6 @@ export async function analyzeFileAction(formData: FormData): Promise<FileAnalysi
 
     try {
         // 1. Keyword Check
-        const workerPath = path.join(process.cwd(), 'node_modules', 'pdfjs-dist', 'legacy', 'build', 'pdf.worker.mjs');
-        PDFParse.setWorker(pathToFileURL(workerPath).toString());
-
         const parser = new PDFParse({ data: buffer });
         const pdfResult = await parser.getText();
 
