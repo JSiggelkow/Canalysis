@@ -3,7 +3,7 @@ spring:
     name: canalysisbackend
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/canalysis
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/canalysis}
     username: canalysis
     password: ${POSTGRES_PASSWORD}
 

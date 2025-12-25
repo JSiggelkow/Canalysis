@@ -1,0 +1,22 @@
+FROM maven:3.9.4-eclipse-temurin-21-alpine AS maven-builder
+
+WORKDIR /app
+
+COPY pom.xml /app
+RUN mvn dependency:go-offline -B
+
+COPY src /app/src
+RUN mvn clean package -DskipTests
+
+FROM eclipse-temurin:21-jre-alpine
+
+RUN addgroup -S spring && adduser -S spring -G spring
+USER spring:spring
+
+WORKDIR /app-service
+
+COPY --from=maven-builder /app/target/*.jar backend.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "backend.jar"]
