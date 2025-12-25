@@ -14,9 +14,9 @@ services:
       POSTGRES_DB: canalysis
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U canalysis -d canalysis" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      timeout: 2s
+      retries: 3
       start_period: 30s
 
   backend:
@@ -30,8 +30,27 @@ services:
       - .env
     environment:
       DATASOURCE_URL: jdbc:postgresql://db:5432/canalysis
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health | grep UP || exit 1"
+      interval: 5s
+      timeout: 2s
+      retries: 3
+      start_period: 40s
     depends_on:
       db:
+        condition: service_healthy
+
+  frontend:
+    container_name: canalysis-frontend
+    build:
+      context: ./canalysisfrontend
+      dockerfile: ./dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      backend:
         condition: service_healthy
 
 volumes:
