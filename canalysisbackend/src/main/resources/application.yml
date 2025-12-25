@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: canalysisbackend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/canalysis
+    username: canalysis
+    password: ${POSTGRES_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: none

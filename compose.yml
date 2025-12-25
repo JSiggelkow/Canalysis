@@ -1,0 +1,10 @@
+services:
+  db:
+    image: postgres:18-alpine
+    ports:
+      - "5432:5432"
+    restart: always
+    env_file: .env
+    environment:
+      POSTGRES_USER: canalysis
+      POSTGRES_DB: canalysis
