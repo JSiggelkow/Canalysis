@@ -2,31 +2,28 @@ import {useFileDialog} from "@mantine/hooks";
 import {ActionIcon, Button, Flex, ScrollArea} from "@mantine/core";
 import { IconX} from "@tabler/icons-react";
 import {useState} from "react";
+import {useFileContext} from "@/app/provider/FileProvder";
 
 export function UploadFilesBox() {
 
-    const [files, setFiles] = useState<File[]>([]);
+    const {files, addFiles, removeFile: removeFile } = useFileContext();
 
     const fileDialog = useFileDialog({
         accept: ".pdf",
         directory: true,
-        onChange: (payload) => setFiles((current) => [...current, ...Array.from(payload)])
+        onChange: (payload) => payload && addFiles(Array.from(payload))
     });
 
     const pickedFiles = files.map((file) => (
         <Flex key={file.name} bdrs="10"  bd="1px solid" justify="space-between" align="center" p="6" m="4">
             <span>{file.name}</span>
             <Flex>
-                <ActionIcon variant="filled" color="red" radius="xl" aria-label="Delete file" onClick={() => handleFileDelete(file)}>
+                <ActionIcon variant="filled" color="red" radius="xl" aria-label="Delete file" onClick={() => removeFile(file)}>
                     <IconX/>
                 </ActionIcon>
             </Flex>
         </Flex>
     ));
-
-    const handleFileDelete = (fileToDelete: File) => {
-        setFiles((current) => current.filter((f)=> f !== fileToDelete))
-    }
 
     return (
             <div className="flex flex-col gap-2 w-full h-full mt-4 overflow-hidden">
