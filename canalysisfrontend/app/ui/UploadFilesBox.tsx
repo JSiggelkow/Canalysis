@@ -1,8 +1,8 @@
 import {useFileDialog} from "@mantine/hooks";
 import {ActionIcon, Button, Flex, ScrollArea} from "@mantine/core";
 import { IconX} from "@tabler/icons-react";
-import {useState} from "react";
 import {useFileContext} from "@/app/provider/FileProvder";
+
 
 export function UploadFilesBox() {
 
@@ -32,7 +32,7 @@ export function UploadFilesBox() {
                         onClick={fileDialog.open}
                         size="xl"
                         fullWidth
-                    >Upload files</Button>
+                    >Upload Files</Button>
                 </div>
                 {pickedFiles.length > 0 && (
                     <ScrollArea className="flex-1 min-h-0 mx-auto xl:w-4xl lg:w-2xl">

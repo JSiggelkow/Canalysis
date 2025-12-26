@@ -2,8 +2,10 @@ import type {Metadata} from "next";
 import "./globals.css";
 import "@mantine/core/styles.css";
 import "@mantine/dropzone/styles.css"
+import "@mantine/notifications/styles.css";
 import React from "react";
 import {ColorSchemeScript, mantineHtmlProps, MantineProvider} from "@mantine/core";
+import {Notifications} from "@mantine/notifications";
 import {FileProvider} from "@/app/provider/FileProvder";
 
 export const metadata: Metadata = {
@@ -24,6 +26,7 @@ export default function RootLayout({
         <body
         >
         <MantineProvider>
+            <Notifications />
             <FileProvider>
                 {children}
             </FileProvider>

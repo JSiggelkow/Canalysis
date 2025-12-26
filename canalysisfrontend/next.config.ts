@@ -1,7 +1,15 @@
-import type { NextConfig } from "next";
+import type {NextConfig} from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone"
+    output: "standalone",
+    async rewrites() {
+        return [
+            {
+                source: '/api/:path*',
+                destination: 'http://localhost:8080/api/:path*', // Deine Spring Boot URL
+            },
+        ];
+    }
 };
 
 export default nextConfig;
