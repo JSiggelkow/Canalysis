@@ -1,65 +1,45 @@
-import Image from "next/image";
+'use client'
+import {Button, Flex, Group, Stepper} from "@mantine/core";
+import {useState} from "react";
+import {UploadFilesBox} from "@/app/ui/UploadFilesBox";
 
 export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+
+    const [active, setActive] = useState(0);
+    const nextStep = () => setActive((current) => (current < 3 ? current + 1 : current))
+    const prevStep = () => setActive((current) => (current > 0 ? current - 1 : current));
+
+
+    return (
+        <>
+            <div className="w-full max-w-12xl h-screen p-4">
+                <div className="flex flex-col w-7xl mx-auto h-full">
+                    <Stepper active={active} onStepClick={setActive} className="flex-1 flex flex-col overflow-hidden" classNames={{
+                        content: "flex-1 flex flex-col overflow-hidden pt-4",
+                        root: "flex flex-col h-full"
+                    }}>
+                        <Stepper.Step label="Step 1" description="Upload course outline">
+                            <UploadFilesBox />
+                        </Stepper.Step>
+                        <Stepper.Step label="Step 2" description="Check for keywords">
+                        </Stepper.Step>
+                        <Stepper.Step label="Step 3" description="Compose files">
+
+                        </Stepper.Step>
+                        <Stepper.Step label="Step 4" description="Analyze composed file">
+
+                        </Stepper.Step>
+                        <Stepper.Completed>
+                            Completed, click back button to get to step 1
+                        </Stepper.Completed>
+                    </Stepper>
+                    <Group justify="center" mt="auto" h="50">
+                        <Button variant="default" onClick={prevStep}>Back</Button>
+                        <Button onClick={nextStep}>Next step</Button>
+                    </Group>
+                </div>
+            </div>
+        </>
+    );
+
 }
