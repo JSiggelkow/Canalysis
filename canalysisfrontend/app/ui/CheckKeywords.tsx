@@ -5,10 +5,12 @@ import {useEffect, useState} from "react";
 import {Keyword} from "@/app/entity/Keyword";
 import api from "@/app/lib/api";
 import {notifications} from "@mantine/notifications";
+import {useKeywordContext} from "@/app/provider/KeywordProvider";
 
 export function CheckKeywords() {
 
-    const [keywords, setKeywords] = useState<Keyword[]>([])
+    const {keywords, addKeywords, removeKeyword} = useKeywordContext();
+
     const [inputValue, setInputValue] = useState<string>("");
     const [error, setError] = useState<boolean>(false);
 
@@ -16,7 +18,7 @@ export function CheckKeywords() {
         const fetchKeywords = async () => {
             try {
                 const response = await api.get<Keyword[]>('/keywords')
-                setKeywords(response.data)
+                addKeywords(response.data)
             } catch (e) {
                 notifications.show({
                     title: 'Error',
@@ -37,8 +39,8 @@ export function CheckKeywords() {
     async function addKeyword(keyword: string, language: string) {
         if (keyword.trim().length === 0) return;
         try {
-            const response = await api.post('/keywords', {keyword, language})
-            setKeywords(current => [...current, response.data]);
+            const response = await api.post<Keyword>('/keywords', {keyword, language})
+            addKeywords([response.data]);
             setInputValue("");
         } catch (e) {
             notifications.show({
@@ -49,10 +51,10 @@ export function CheckKeywords() {
         }
     }
 
-    async function removeKeyword(keyword: Keyword) {
+    async function deleteKeyword(keyword: Keyword) {
         try {
             await api.delete(`/keywords/${keyword.keyword}`)
-            setKeywords(current => current.filter(k => k !== keyword));
+            removeKeyword(keyword);
         } catch (e) {
             notifications.show({
                 title: 'Error',
@@ -79,7 +81,7 @@ export function CheckKeywords() {
                                 size="sm"
                                 key={keyword.keyword}
                                 withRemoveButton
-                                onRemove={() => removeKeyword(keyword)}
+                                onRemove={() => deleteKeyword(keyword)}
                             >
                                 {keyword.keyword}
                             </Pill>
