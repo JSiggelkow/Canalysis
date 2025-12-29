@@ -18,21 +18,22 @@ import api from "@/app/lib/api";
 import {notifications} from "@mantine/notifications";
 import {useKeywordContext} from "@/app/provider/KeywordProvider";
 import {useFileContext} from "@/app/provider/FileProvder";
-import {KeywordSearchResult, searchFileForKeywords} from "@/app/lib/PdfSearchService";
+import {searchFileForKeywords} from "@/app/lib/PdfSearchService";
 import {IconCheck, IconFileText, IconX} from "@tabler/icons-react";
+import {useResultContext} from "@/app/provider/ResultProvider";
 
 export function CheckKeywords() {
 
     const {keywords, addKeywords, removeKeyword} = useKeywordContext();
     const {files} = useFileContext();
+    const {results, addResult, removeResult, clearResults} = useResultContext();
 
     const [inputValue, setInputValue] = useState<string>("");
     const [error, setError] = useState<boolean>(false);
-    const [results, setResults] = useState<KeywordSearchResult[]>([]);
     const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
-    const [analysisStatus, setAnalysisStatus] = useState<string>("off")
+    const [analysisStatus, setAnalysisStatus] = useState<string>(results.length > 0 ? "finished" : "off")
     const [currentFile, setCurrentFile] = useState<File | null>(null);
-    const [activeTab, setActiveTab] = useState<string | null>('keywords');
+    const [activeTab, setActiveTab] = useState<string | null>(results.length > 0 ? "results" : "keywords");
 
     useEffect(() => {
         const fetchKeywords = async () => {
@@ -88,18 +89,19 @@ export function CheckKeywords() {
         setActiveTab("results");
         setIsAnalyzing(true);
         setAnalysisStatus("running");
-        setResults([]);
+        clearResults();
 
         const promises = files.map(async (file) => {
             const result = await searchFileForKeywords(file, keywords);
             setCurrentFile(file);
-            setResults(prevResults => prevResults.concat(result));
+            addResult(result);
         });
 
         await Promise.all(promises);
 
         setIsAnalyzing(false);
         setAnalysisStatus("finished");
+        setCurrentFile(null);
 
         notifications.show({
             title: 'Analysis completed',

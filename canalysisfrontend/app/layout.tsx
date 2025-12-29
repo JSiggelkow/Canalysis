@@ -8,6 +8,7 @@ import {ColorSchemeScript, mantineHtmlProps, MantineProvider} from "@mantine/cor
 import {Notifications} from "@mantine/notifications";
 import {FileProvider} from "@/app/provider/FileProvder";
 import {KeywordProvider} from "@/app/provider/KeywordProvider";
+import {ResultProvider} from "@/app/provider/ResultProvider";
 
 export const metadata: Metadata = {
     title: "Canalysis",
@@ -30,7 +31,9 @@ export default function RootLayout({
             <Notifications/>
             <FileProvider>
                 <KeywordProvider>
-                    {children}
+                    <ResultProvider>
+                        {children}
+                    </ResultProvider>
                 </KeywordProvider>
             </FileProvider>
         </MantineProvider>

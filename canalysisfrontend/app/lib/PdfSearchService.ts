@@ -42,8 +42,13 @@ export const searchFileForKeywords = async (file: File, keywords: Keyword[]): Pr
                 .toLowerCase();
 
             keywords.forEach(keyword => {
-                if (pageText.includes(keyword.keyword.toLowerCase())) {
-                    foundMatches.get(keyword.keyword.toLowerCase())?.add(i);
+                const lowerKeyword = keyword.keyword.toLowerCase();
+                const escapedKeyword = lowerKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+                const regex = new RegExp(`(^|[^a-z0-9äöüß])${escapedKeyword}([^a-z0-9äöüß]|$)`);
+
+                if (regex.test(pageText)) {
+                    foundMatches.get(lowerKeyword)?.add(i);
                 }
             });
         }

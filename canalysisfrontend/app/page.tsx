@@ -1,14 +1,18 @@
 'use client'
-import {Button, Flex, Group, Stepper} from "@mantine/core";
+import {Button, Group, Stepper} from "@mantine/core";
 import {useState} from "react";
 import {UploadFilesBox} from "@/app/ui/UploadFilesBox";
 import {useFileContext} from "@/app/provider/FileProvder";
 import {CheckKeywords} from "@/app/ui/CheckKeywords";
+import {useResultContext} from "@/app/provider/ResultProvider";
 
 export default function Home() {
 
     const {files} = useFileContext();
+    const {results} = useResultContext();
+
     const isStep1Valid = files.length > 0;
+    const isStep2Valid = results.length > 0;
 
     const [active, setActive] = useState(0);
     const nextStep = () => setActive((current) => (current < 3 ? current + 1 : current))
@@ -30,7 +34,7 @@ export default function Home() {
                         <Stepper.Step label="Step 2" description="Check for keywords" allowStepSelect={isStep1Valid}>
                             <CheckKeywords />
                         </Stepper.Step>
-                        <Stepper.Step label="Step 3" description="Compose files" allowStepSelect={false}>
+                        <Stepper.Step label="Step 3" description="Compose files" allowStepSelect={isStep1Valid && isStep2Valid}>
 
                         </Stepper.Step>
                         <Stepper.Step label="Step 4" description="Analyze composed file" allowStepSelect={false}>
@@ -42,7 +46,7 @@ export default function Home() {
                     </Stepper>
                     <Group justify="center" mt="auto" h="50">
                         <Button variant="default" onClick={prevStep}>Back</Button>
-                        <Button onClick={nextStep} disabled={active === 0 && !isStep1Valid}>Next step</Button>
+                        <Button onClick={nextStep} disabled={((active === 0 && !isStep1Valid) || (active === 1 && !isStep2Valid))}>Next step</Button>
                     </Group>
                 </div>
             </div>
