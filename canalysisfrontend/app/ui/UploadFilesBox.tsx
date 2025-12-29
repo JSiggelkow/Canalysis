@@ -11,6 +11,7 @@ export function UploadFilesBox() {
     const fileDialog = useFileDialog({
         accept: ".pdf",
         directory: true,
+        multiple: true,
         onChange: (payload) => payload && addFiles(Array.from(payload))
     });
 
