@@ -5,6 +5,7 @@ import {UploadFilesBox} from "@/app/ui/UploadFilesBox";
 import {useFileContext} from "@/app/provider/FileProvder";
 import {CheckKeywords} from "@/app/ui/CheckKeywords";
 import {useResultContext} from "@/app/provider/ResultProvider";
+import {ComposeFiles} from "@/app/ui/ComposeFiles";
 
 export default function Home() {
 
@@ -35,7 +36,7 @@ export default function Home() {
                             <CheckKeywords />
                         </Stepper.Step>
                         <Stepper.Step label="Step 3" description="Compose files" allowStepSelect={isStep1Valid && isStep2Valid}>
-
+                            <ComposeFiles />
                         </Stepper.Step>
                         <Stepper.Step label="Step 4" description="Analyze composed file" allowStepSelect={false}>
 

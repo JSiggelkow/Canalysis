@@ -91,13 +91,15 @@ export function CheckKeywords() {
         setAnalysisStatus("running");
         clearResults();
 
-        const promises = files.map(async (file) => {
-            const result = await searchFileForKeywords(file, keywords);
-            setCurrentFile(file);
-            addResult(result);
-        });
-
-        await Promise.all(promises);
+        const BATCH_SIZE = 3;
+        for (let i = 0; i < files.length; i += BATCH_SIZE) {
+            const batch = files.slice(i, i + BATCH_SIZE);
+            await Promise.all(batch.map(async (file) => {
+                const result = await searchFileForKeywords(file, keywords);
+                setCurrentFile(file);
+                addResult(result);
+            }));
+        }
 
         setIsAnalyzing(false);
         setAnalysisStatus("finished");
@@ -128,7 +130,7 @@ export function CheckKeywords() {
                     <Tabs.Tab value="results" disabled={analysisStatus === 'off'}>Results</Tabs.Tab>
                 </Tabs.List>
 
-                <Tabs.Panel value="keywords" className="flex-1 flex flex-col h-full min-h-0 pt-4">
+                <Tabs.Panel value="keywords" className="flex-1 flex flex-col h-full min-h-0 p-4">
                     <ScrollArea className="flex-1 min-h-0 w-full mx-auto xl:w-4xl lg:w-2xl p-2">
                         <div className="flex flex-wrap gap-2">
                             {keywords.map((keyword) => (

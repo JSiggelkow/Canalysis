@@ -9,6 +9,7 @@ export interface KeywordMatch {
 export interface KeywordSearchResult {
     fileName: string;
     file: File;
+    pageCount: number;
     status: 'penging' | 'processing' | 'completed' | 'failed';
     matches: KeywordMatch[];
     error?: string;
@@ -55,6 +56,8 @@ export const searchFileForKeywords = async (file: File, keywords: Keyword[]): Pr
                 });
         }
 
+        await pdf.destroy();
+
             const matches: KeywordMatch[] = [];
             foundMatches.forEach((pages, keyword) => pages.size > 0 && matches.push({
                 keyword,
@@ -64,6 +67,7 @@ export const searchFileForKeywords = async (file: File, keywords: Keyword[]): Pr
             return {
                 file: file,
                 fileName: file.name,
+                pageCount: pdf.numPages,
                 status: 'completed',
                 matches
             }
@@ -71,6 +75,7 @@ export const searchFileForKeywords = async (file: File, keywords: Keyword[]): Pr
         return {
             file: file,
             fileName: file.name,
+            pageCount: 0,
             status: 'failed',
             error: e.message,
             matches: []
