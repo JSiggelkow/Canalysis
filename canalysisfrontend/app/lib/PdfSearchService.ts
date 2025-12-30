@@ -37,20 +37,22 @@ export const searchFileForKeywords = async (file: File, keywords: Keyword[]): Pr
             const textContent = await page.getTextContent();
 
             const pageText = textContent.items
-                .map((item) => (item as TextItem).str)
-                .join(' ')
-                .toLowerCase();
+                    .map((item) => (item as TextItem).str)
+                    .join(' ')
+                    .toLowerCase()
+                    .replace(/\s+/g, ' ');
 
             keywords.forEach(keyword => {
-                const lowerKeyword = keyword.keyword.toLowerCase();
-                const escapedKeyword = lowerKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const lowerKeyword = keyword.keyword.toLowerCase();
+                    const searchKeyword = lowerKeyword.replace(/\s+/g, ' ').trim();
+                    const escapedKeyword = searchKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-                const regex = new RegExp(`(^|[^a-z0-9äöüß])${escapedKeyword}([^a-z0-9äöüß]|$)`);
+                    const regex = new RegExp(`(^|[^a-z0-9äöüß])${escapedKeyword}([^a-z0-9äöüß]|$)`);
 
-                if (regex.test(pageText)) {
-                    foundMatches.get(lowerKeyword)?.add(i);
-                }
-            });
+                    if (regex.test(pageText)) {
+                        foundMatches.get(lowerKeyword)?.add(i);
+                    }
+                });
         }
 
             const matches: KeywordMatch[] = [];
