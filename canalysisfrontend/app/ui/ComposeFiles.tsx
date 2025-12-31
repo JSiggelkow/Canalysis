@@ -18,24 +18,24 @@ import {useState} from "react";
 import {IconCheck, IconDownload, IconFileText, IconX} from "@tabler/icons-react";
 import {useResultContext} from "@/app/provider/ResultProvider";
 import {composeFilesService, ComposeStatus} from "@/app/lib/ComposeFilesService";
+import {useComposedFileContext} from "@/app/provider/ComposedFileProvider";
 
 export function ComposeFiles() {
 
     const {results} = useResultContext();
+    const {composedFile, setComposedFile, composeStatus, setComposeStatus} = useComposedFileContext();
 
-    const [activeTab, setActiveTab] = useState<string | null>("Files to Compose");
-    const [status, setStatus] = useState<ComposeStatus | null>(null);
+    const [activeTab, setActiveTab] = useState<string | null>(composeStatus != undefined ? "Composed Files" : "Files to Compose");
     const [isComposing, setIsComposing] = useState<boolean>(false);
-    const [currentFile, setCurrentFile] = useState<File | null>(null);
 
     const handleCompose = async () => {
         setIsComposing(true);
         setActiveTab("Composed Files");
         try {
-            const file = await composeFilesService(results.filter(r => r.matches.length > 0), (currentStatus) => {
-                setStatus(currentStatus)
+            const file = await composeFilesService(results.filter(r => r.matches.length > 0), (currentStatus: ComposeStatus) => {
+                setComposeStatus(currentStatus);
             });
-            setCurrentFile(file);
+            setComposedFile(file)
         } catch (e) {
             console.error(e);
         } finally {
@@ -44,8 +44,8 @@ export function ComposeFiles() {
     }
 
     const downloadFile = () => {
-        if (currentFile === null) return;
-        const file = currentFile;
+        if (composedFile === null || composedFile === undefined) return;
+        const file = composedFile;
         const url = URL.createObjectURL(file);
         const a = document.createElement('a');
         a.href = url;
@@ -131,19 +131,19 @@ export function ComposeFiles() {
                                     <div className="flex flex-row gap-2">
                                         <IconFileText size={24} className="text-gray-500"/>
                                         <Text w={600} truncate="end">{
-                                            isComposing && status ? "Composing File: " + status.currentFileName :
-                                                !isComposing && status && status.status === "completed" ? "Created: " + currentFile?.name : "Click Compose to start composing files."
+                                            isComposing && composeStatus ? "Composing File: " + composeStatus.currentFileName :
+                                                !isComposing && composeStatus && composeStatus.status === "completed" ? "Created: " + composedFile?.name : "Click Compose to start composing files."
                                         }</Text>
                                     </div>
                                     <div className="flex flex-row gap-2">
-                                    <Badge
-                                        color={
-                                            status?.status === "initializing" ? 'indigo' :
-                                                status?.status === "processing" ? 'blue' :
-                                                    status?.status === "saving" ? 'yellow' :
-                                                        status?.status === "completed" ? 'green' : 'gray'
-                                        }
-                                    >{status?.status || "off"}</Badge>
+                                        <Badge
+                                            color={
+                                                composeStatus?.status === "initializing" ? 'indigo' :
+                                                    composeStatus?.status === "processing" ? 'blue' :
+                                                        composeStatus?.status === "saving" ? 'yellow' :
+                                                            composeStatus?.status === "completed" ? 'green' : 'gray'
+                                            }
+                                        >{composeStatus?.status || "off"}</Badge>
                                     </div>
                                 </Group>
                                 <Group justify="space-evenly">
@@ -153,41 +153,41 @@ export function ComposeFiles() {
                                         filledSegmentColor="blue"
                                         size={200}
                                         thickness={12}
-                                        value={status ? status.totalFilesCount / status.processedFilesCount * 100 : 0}
+                                        value={composeStatus ? composeStatus.totalFilesCount / composeStatus.processedFilesCount * 100 : 0}
                                         labelPosition="center"
-                                        label={`${status?.processedFilesCount || 0} / ${status?.totalFilesCount || 0} composed`}>
+                                        label={`${composeStatus?.processedFilesCount || 0} / ${composeStatus?.totalFilesCount || 0} composed`}>
                                     </SemiCircleProgress>
                                     <RingProgress
-                                            size={150}
-                                            thickness={20}
-                                            label={
-                                                <Text size="md" ta="center" px="xs" style={{pointerEvents: "none"}}>
-                                                    Pages
-                                                </Text>
+                                        size={150}
+                                        thickness={20}
+                                        label={
+                                            <Text size="md" ta="center" px="xs" style={{pointerEvents: "none"}}>
+                                                Pages
+                                            </Text>
+                                        }
+                                        sections={[
+                                            {
+                                                value: composeStatus && composeStatus.totalPagesCount > 0
+                                                    ? (composeStatus.totalPagesAdded / composeStatus.totalPagesCount) * 100
+                                                    : 0,
+                                                color: 'blue',
+                                                tooltip: 'Pages added - ' + (composeStatus?.totalPagesAdded || 0)
+                                            },
+                                            {
+                                                value: composeStatus && composeStatus.totalPagesCount > 0
+                                                    ? ((composeStatus.totalPagesCount - composeStatus.totalPagesAdded) / composeStatus.totalPagesCount) * 100
+                                                    : 0,
+                                                color: 'gray',
+                                                tooltip: 'Pages skipped - ' + (composeStatus ? composeStatus.totalPagesCount - composeStatus.totalPagesAdded : 0)
                                             }
-                                            sections={[
-                                                {
-                                                    value: status && status.totalPagesCount > 0
-                                                        ? (status.totalPagesAdded / status.totalPagesCount) * 100
-                                                        : 0,
-                                                    color: 'blue',
-                                                    tooltip: 'Pages added - ' + (status?.totalPagesAdded || 0)
-                                                },
-                                                {
-                                                    value: status && status.totalPagesCount > 0
-                                                        ? ((status.totalPagesCount - status.totalPagesAdded) / status.totalPagesCount) * 100
-                                                        : 0,
-                                                    color: 'gray',
-                                                    tooltip: 'Pages skipped - ' + (status ? status.totalPagesCount - status.totalPagesAdded : 0)
-                                                }
-                                            ]}></RingProgress>
+                                        ]}></RingProgress>
                                 </Group>
                                 <Group justify="center" mt="md">
                                     <Button
-                                        disabled={status?.status !== "completed" || isComposing || !status}
+                                        disabled={composeStatus?.status !== "completed" || isComposing || !composeStatus}
                                         onClick={() => downloadFile()}
-                                        rightSection={<IconDownload size={18} />}
-                                        >Download</Button>
+                                        rightSection={<IconDownload size={18}/>}
+                                    >Download</Button>
 
                                 </Group>
                             </Card.Section>

@@ -9,6 +9,7 @@ import {Notifications} from "@mantine/notifications";
 import {FileProvider} from "@/app/provider/FileProvder";
 import {KeywordProvider} from "@/app/provider/KeywordProvider";
 import {ResultProvider} from "@/app/provider/ResultProvider";
+import {ComposedFileProvider} from "@/app/provider/ComposedFileProvider";
 
 export const metadata: Metadata = {
     title: "Canalysis",
@@ -32,7 +33,9 @@ export default function RootLayout({
             <FileProvider>
                 <KeywordProvider>
                     <ResultProvider>
-                        {children}
+                        <ComposedFileProvider>
+                            {children}
+                        </ComposedFileProvider>
                     </ResultProvider>
                 </KeywordProvider>
             </FileProvider>
