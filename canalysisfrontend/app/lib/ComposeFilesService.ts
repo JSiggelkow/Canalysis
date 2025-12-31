@@ -1,14 +1,6 @@
-import {KeywordSearchResult} from "@/app/lib/PdfSearchService";
+import {KeywordSearchResult} from "@/app/entity/KeywordSearchResult";
 import {PDFDocument} from "pdf-lib";
-
-export interface ComposeStatus {
-    currentFileName: string;
-    processedFilesCount: number;
-    totalFilesCount: number;
-    totalPagesAdded: number;
-    totalPagesCount: number;
-    status: 'initializing' | 'processing' | 'saving' | 'completed';
-}
+import {ComposeStatus} from "@/app/entity/ComposeStatus";
 
 export const composeFilesService = async (
     results: KeywordSearchResult[],

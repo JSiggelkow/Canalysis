@@ -1,7 +1,7 @@
 'use client'
 
 import React, {createContext, ReactNode, useContext, useState} from "react";
-import {ComposeStatus} from "@/app/lib/ComposeFilesService";
+import {ComposeStatus} from "@/app/entity/ComposeStatus";
 
 interface ComposedFileContextType {
     composedFile?: File;

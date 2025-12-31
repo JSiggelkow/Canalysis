@@ -1,6 +1,6 @@
 'use client'
 
-import {KeywordSearchResult} from "@/app/lib/PdfSearchService";
+import {KeywordSearchResult} from "@/app/entity/KeywordSearchResult";
 import {createContext, ReactNode, useContext, useState} from "react";
 
 interface ResultContextType {

@@ -17,7 +17,8 @@ import {
 import {useState} from "react";
 import {IconCheck, IconDownload, IconFileText, IconX} from "@tabler/icons-react";
 import {useResultContext} from "@/app/provider/ResultProvider";
-import {composeFilesService, ComposeStatus} from "@/app/lib/ComposeFilesService";
+import {composeFilesService} from "@/app/lib/ComposeFilesService";
+import {ComposeStatus} from "@/app/entity/ComposeStatus";
 import {useComposedFileContext} from "@/app/provider/ComposedFileProvider";
 
 export function ComposeFiles() {

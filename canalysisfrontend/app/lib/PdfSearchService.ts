@@ -1,19 +1,7 @@
 import {Keyword} from "../entity/Keyword";
 import {TextItem} from "pdfjs-dist/types/src/display/api";
-
-export interface KeywordMatch {
-    keyword: string;
-    pages: number[];
-}
-
-export interface KeywordSearchResult {
-    fileName: string;
-    file: File;
-    pageCount: number;
-    status: 'penging' | 'processing' | 'completed' | 'failed';
-    matches: KeywordMatch[];
-    error?: string;
-}
+import {KeywordMatch} from "@/app/entity/KeywordMatch";
+import {KeywordSearchResult} from "@/app/entity/KeywordSearchResult";
 
 export const searchFileForKeywords = async (file: File, keywords: Keyword[]): Promise<KeywordSearchResult> => {
     try {
