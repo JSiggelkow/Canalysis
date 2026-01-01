@@ -23,6 +23,7 @@ import {IconCheck, IconFileText, IconX} from "@tabler/icons-react";
 import {useResultContext} from "@/app/provider/ResultProvider";
 import {FilesList} from "@/app/ui/FilesList";
 import {EditKeywords} from "@/app/ui/EditKeywords";
+import {KeywordSearchResultList} from "@/app/ui/KeywordSearchResultList";
 
 export function CheckKeywords() {
 
@@ -132,7 +133,7 @@ export function CheckKeywords() {
                                         thickness={12}
                                         value={files.length > 0 ? results.filter(result => result.status === 'completed').length / files.length * 100 : 0}
                                         labelPosition="center"
-                                        label={`${results.filter(result => result.status === 'completed').length} / ${files.length}`}>
+                                        label={`${results.filter(result => result.status === 'completed').length} / ${files.length} analyzed`}>
                                     </SemiCircleProgress>
                                     <RingProgress
                                         size={120}
@@ -183,54 +184,7 @@ export function CheckKeywords() {
                             </Card.Section>
                         </Card>
                     </div>
-
-                    <ScrollArea className="flex-1 min-h-0 w-full mx-auto xl:w-4xl lg:w-2xl p-2">
-                        <Accordion variant="separated" radius="md" className="pb-8">
-                            {results.map((result) => (
-                                <Accordion.Item key={result.fileName} value={result.fileName}>
-                                    <Accordion.Control icon={
-                                        <ThemeIcon color={result.matches.length > 0 ? 'teal' : 'gray'} variant="light"
-                                                   size="lg">
-                                            {result.matches.length > 0 ?
-                                                <IconCheck style={{width: rem(20), height: rem(20)}}/> :
-                                                <IconX style={{width: rem(20), height: rem(20)}}/>}
-                                        </ThemeIcon>
-                                    }>
-                                        <Group justify="space-between" wrap="nowrap">
-                                            <Group gap="xs" wrap="nowrap">
-                                                <IconFileText size={16} className="text-gray-500"/>
-                                                <Text truncate="end" w={300} fw={500}>{result.fileName}</Text>
-                                            </Group>
-                                            {result.matches.length > 0 && <Badge color="teal"
-                                                                                 variant="light">{result.matches.length} Matches</Badge>}
-                                        </Group>
-                                    </Accordion.Control>
-                                    <Accordion.Panel>
-                                        {result.matches.length > 0 ? (
-                                            <List spacing="xs" size="sm" p={10} center icon={
-                                                <ThemeIcon color="teal" size={24} radius="xl">
-                                                    <IconCheck style={{width: rem(12), height: rem(12)}}/>
-                                                </ThemeIcon>
-                                            }>
-                                                {result.matches.map((match, idx) => (
-                                                    <List.Item key={idx}>
-                                                        <Group gap="xs">
-                                                            <Text fw={700}>{match.keyword}</Text>
-                                                            <Text size="xs" c="dimmed">found on
-                                                                pages: {match.pages.join(', ')}</Text>
-                                                        </Group>
-                                                    </List.Item>
-                                                ))}
-                                            </List>
-                                        ) : (
-                                            <Text c="dimmed" size="sm" fs="italic">no keywords found in this
-                                                file.</Text>
-                                        )}
-                                    </Accordion.Panel>
-                                </Accordion.Item>
-                            ))}
-                        </Accordion>
-                    </ScrollArea>
+                    <KeywordSearchResultList />
                 </Tabs.Panel>
             </Tabs>
         </div>
