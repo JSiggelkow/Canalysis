@@ -34,17 +34,17 @@ export default function Home() {
                         content: "flex-1 flex flex-col overflow-hidden pt-4",
                         root: "flex flex-col h-full"
                     }}>
-                        <Stepper.Step label="Step 1" description="Upload files" allowStepSelect={true}>
+                        <Stepper.Step label="step 1" description="upload files" allowStepSelect={true}>
                             <UploadFilesBox/>
                         </Stepper.Step>
-                        <Stepper.Step label="Step 2" description="Check for keywords" allowStepSelect={isStep1Valid}>
+                        <Stepper.Step label="step 2" description="check for keywords" allowStepSelect={isStep1Valid}>
                             <CheckKeywords/>
                         </Stepper.Step>
-                        <Stepper.Step label="Step 3" description="Compose files"
+                        <Stepper.Step label="step 3" description="compose files"
                                       allowStepSelect={isStep1Valid && isStep2Valid}>
                             <ComposeFiles/>
                         </Stepper.Step>
-                        <Stepper.Step label="Step 4" description="Analyze composed file" allowStepSelect={isStep1Valid && isStep2Valid && isStep3Valid}>
+                        <Stepper.Step label="step 4" description="analyze composed file" allowStepSelect={isStep1Valid && isStep2Valid && isStep3Valid}>
 
                         </Stepper.Step>
                         <Stepper.Completed>
@@ -52,10 +52,11 @@ export default function Home() {
                         </Stepper.Completed>
                     </Stepper>
                     <Group justify="center" mt="auto" h="50">
-                        <Button variant="default" onClick={prevStep}>Back</Button>
+                        <Button variant="default" onClick={prevStep}>back</Button>
                         <Button onClick={nextStep}
-                                disabled={((active === 0 && !isStep1Valid) || (active === 1 && !isStep2Valid) || (active === 2 && !isStep3Valid))}>Next
-                            step</Button>
+                                disabled={((active === 0 && !isStep1Valid) || (active === 1 && !isStep2Valid) || (active === 2 && !isStep3Valid))}>
+                            next step
+                        </Button>
                     </Group>
                 </div>
             </div>

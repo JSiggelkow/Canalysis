@@ -159,8 +159,8 @@ export function ComposeFiles() {
                                         label={`${composeStatus?.processedFilesCount || 0} / ${composeStatus?.totalFilesCount || 0} composed`}>
                                     </SemiCircleProgress>
                                     <RingProgress
-                                        size={150}
-                                        thickness={20}
+                                        size={120}
+                                        thickness={12}
                                         label={
                                             <Text size="md" ta="center" px="xs" style={{pointerEvents: "none"}}>
                                                 Pages

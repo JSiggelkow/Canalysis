@@ -57,7 +57,7 @@ export const searchFileForKeywords = async (file: File, keywords: Keyword[]): Pr
                 fileName: file.name,
                 pageCount: pdf.numPages,
                 status: 'completed',
-                matches
+                matches: matches
             }
     } catch (e: any) {
         return {

@@ -4,7 +4,7 @@ export interface KeywordSearchResult {
     fileName: string;
     file: File;
     pageCount: number;
-    status: 'penging' | 'processing' | 'completed' | 'failed';
+    status: 'pending' | 'processing' | 'completed' | 'failed';
     matches: KeywordMatch[];
     error?: string;
 }

@@ -4,17 +4,17 @@ import {
     Accordion,
     Badge,
     Button,
-    Card,
+    Card, Flex,
     Group,
     List,
-    rem,
+    rem, RingProgress,
     ScrollArea,
     SemiCircleProgress,
     Tabs,
     Text,
     ThemeIcon
 } from "@mantine/core";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import {notifications} from "@mantine/notifications";
 import {useKeywordContext} from "@/app/provider/KeywordProvider";
 import {useFileContext} from "@/app/provider/FileProvider";
@@ -62,6 +62,21 @@ export function CheckKeywords() {
         })
     }
 
+    const uniqueKeywordsFound = useMemo(() => {
+        return results.reduce((acc, result) => {
+            result.matches.forEach(match => acc.add(match.keyword.toLowerCase()));
+            return acc;
+        }, new Set<string>()).size;
+    }, [results]);
+
+    const totalMatchesCount = useMemo(() => {
+        return results.reduce((acc, result) => acc + result.matches.length, 0);
+    }, [results]);
+
+    const filesWithMatchesCount = useMemo(() => {
+        return results.filter(r => r.matches.length > 0).length;
+    }, [results]);
+
     return (
         <div className="flex flex-col gap-2 w-full h-full mt-4 overflow-hidden">
             <div className="max-w-1/3 lg:w-1/3 mx-auto flex-shrink-0">
@@ -71,10 +86,11 @@ export function CheckKeywords() {
                     size="xl"
                     fullWidth
                     onClick={onCheckKeywords}
-                >Check for Keywords</Button>
+                >check for keywords</Button>
             </div>
 
-            <Tabs value={activeTab} onChange={setActiveTab} className="flex-1 flex flex-col min-h-0 h-full" variant="outline" radius="md">
+            <Tabs value={activeTab} onChange={setActiveTab} className="flex-1 flex flex-col min-h-0 h-full"
+                  variant="outline" radius="md">
                 <Tabs.List justify="center">
                     <Tabs.Tab value="files">files</Tabs.Tab>
                     <Tabs.Tab value="keywords">keywords</Tabs.Tab>
@@ -82,22 +98,30 @@ export function CheckKeywords() {
                 </Tabs.List>
                 <Tabs.Panel value="files" className="flex-1 flex flex-col h-full min-h-0 p-4">
                     <ScrollArea className="flex-1 min-h-0 w-full mx-auto xl:w-4xl lg:w-2xl p-2">
-                        <FilesList files={files} removeFile={removeFile} />
+                        <FilesList files={files} removeFile={removeFile}/>
                     </ScrollArea>
                 </Tabs.Panel>
 
                 <Tabs.Panel value="keywords" className="flex-1 flex flex-col h-full min-h-0 p-4">
-                    <EditKeywords />
+                    <EditKeywords/>
                 </Tabs.Panel>
 
                 <Tabs.Panel value="results" className="flex-1 flex h-full flex-col min-h-0 p-2">
                     <div className="flex-shrink-0 min-h-0 w-full xl:w-4xl lg:w-2xl mx-auto m-2">
                         <Card shadow="sm" radius="md" p="xl">
                             <Card.Section>
-                                <Group justify="flex-end" mb="xs">
+                                <Group justify="space-between" mb="xs">
+                                    <Flex direction="row">
+                                        <IconFileText size={24} className="text-gray-500"/>
+                                        <Text w={600}
+                                              truncate="end">
+                                            {analysisStatus === "finished" ? "click check for keywords to start another analysis"
+                                                : analysisStatus === "off" ? "click check for keywords to start analysis"
+                                                    : analysisStatus === "running" && currentFile ? currentFile.name : ""}</Text>
+                                    </Flex>
                                     <Badge
                                         color={analysisStatus === "off" ? 'gray' : analysisStatus === "running" ? 'blue' : 'green'}
-                                        size="sm">{analysisStatus}</Badge>
+                                    >{analysisStatus}</Badge>
                                 </Group>
                                 <Group justify="space-evenly">
                                     <SemiCircleProgress
@@ -108,10 +132,53 @@ export function CheckKeywords() {
                                         thickness={12}
                                         value={files.length > 0 ? results.filter(result => result.status === 'completed').length / files.length * 100 : 0}
                                         labelPosition="center"
-                                        label={`${results.filter(result => result.status === 'completed').length} / ${files.length} files`}>
+                                        label={`${results.filter(result => result.status === 'completed').length} / ${files.length}`}>
                                     </SemiCircleProgress>
-                                    <Text w={300} truncate="end">Analyzing: {currentFile?.name || "none"}</Text>
-                                    <Text w={100}>Matches: {results.filter(result => result.matches.length != 0).length || 0}</Text>
+                                    <RingProgress
+                                        size={120}
+                                        thickness={12}
+                                        label={
+                                            <Flex direction="row" align="center">
+                                                <IconFileText size={20} className="text-gray-500 mx-auto"/>
+                                            </Flex>
+                                        }
+                                        sections={[
+                                            {
+                                                value: filesWithMatchesCount / files.length * 100,
+                                                color: 'blue',
+                                                tooltip: `${filesWithMatchesCount} files have keywords`
+                                            },
+                                            {
+                                                value: (files.length - filesWithMatchesCount) / files.length * 100,
+                                                color: 'gray',
+                                                tooltip: `${files.length - filesWithMatchesCount} files do not have keywords`
+                                            }
+                                        ]}
+                                    />
+                                    <RingProgress
+                                        size={120}
+                                        thickness={12}
+                                        label={
+                                            <Flex direction="row" align="center">
+                                                <IconCheck size={20} className="text-gray-500 mx-auto"/>
+                                            </Flex>
+                                        }
+                                        sections={[
+                                            {
+                                                value: uniqueKeywordsFound / keywords.length * 100,
+                                                color: 'blue',
+                                                tooltip: `${uniqueKeywordsFound} different keywords found`
+                                            },
+                                            {
+                                                value: (keywords.length - uniqueKeywordsFound) / keywords.length * 100,
+                                                color: 'gray',
+                                                tooltip: `${totalMatchesCount - uniqueKeywordsFound} keywords not found`
+                                            }
+                                        ]}
+
+                                    />
+                                    <Text w={200} size="xl" c="blue">{totalMatchesCount} matches found</Text>
+
                                 </Group>
                             </Card.Section>
                         </Card>
@@ -122,16 +189,20 @@ export function CheckKeywords() {
                             {results.map((result) => (
                                 <Accordion.Item key={result.fileName} value={result.fileName}>
                                     <Accordion.Control icon={
-                                        <ThemeIcon color={result.matches.length > 0 ? 'teal' : 'gray'} variant="light" size="lg">
-                                            {result.matches.length > 0 ? <IconCheck style={{width: rem(20), height: rem(20)}}/> : <IconX style={{width: rem(20), height: rem(20)}}/>}
+                                        <ThemeIcon color={result.matches.length > 0 ? 'teal' : 'gray'} variant="light"
+                                                   size="lg">
+                                            {result.matches.length > 0 ?
+                                                <IconCheck style={{width: rem(20), height: rem(20)}}/> :
+                                                <IconX style={{width: rem(20), height: rem(20)}}/>}
                                         </ThemeIcon>
                                     }>
                                         <Group justify="space-between" wrap="nowrap">
                                             <Group gap="xs" wrap="nowrap">
-                                                <IconFileText size={16} className="text-gray-500" />
+                                                <IconFileText size={16} className="text-gray-500"/>
                                                 <Text truncate="end" w={300} fw={500}>{result.fileName}</Text>
                                             </Group>
-                                            {result.matches.length > 0 && <Badge color="teal" variant="light">{result.matches.length} Matches</Badge>}
+                                            {result.matches.length > 0 && <Badge color="teal"
+                                                                                 variant="light">{result.matches.length} Matches</Badge>}
                                         </Group>
                                     </Accordion.Control>
                                     <Accordion.Panel>
@@ -145,13 +216,15 @@ export function CheckKeywords() {
                                                     <List.Item key={idx}>
                                                         <Group gap="xs">
                                                             <Text fw={700}>{match.keyword}</Text>
-                                                            <Text size="xs" c="dimmed">found on pages: {match.pages.join(', ')}</Text>
+                                                            <Text size="xs" c="dimmed">found on
+                                                                pages: {match.pages.join(', ')}</Text>
                                                         </Group>
                                                     </List.Item>
                                                 ))}
                                             </List>
                                         ) : (
-                                            <Text c="dimmed" size="sm" fs="italic">No keywords found in this file.</Text>
+                                            <Text c="dimmed" size="sm" fs="italic">no keywords found in this
+                                                file.</Text>
                                         )}
                                     </Accordion.Panel>
                                 </Accordion.Item>
