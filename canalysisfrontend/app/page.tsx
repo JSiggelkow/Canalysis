@@ -2,7 +2,7 @@
 import {Button, Group, Stepper} from "@mantine/core";
 import {useState} from "react";
 import {UploadFilesBox} from "@/app/ui/UploadFilesBox";
-import {useFileContext} from "@/app/provider/FileProvder";
+import {useFileContext} from "@/app/provider/FileProvider";
 import {CheckKeywords} from "@/app/ui/CheckKeywords";
 import {useResultContext} from "@/app/provider/ResultProvider";
 import {ComposeFiles} from "@/app/ui/ComposeFiles";

@@ -6,7 +6,7 @@ import "@mantine/notifications/styles.css";
 import React from "react";
 import {ColorSchemeScript, mantineHtmlProps, MantineProvider} from "@mantine/core";
 import {Notifications} from "@mantine/notifications";
-import {FileProvider} from "@/app/provider/FileProvder";
+import {FileProvider} from "@/app/provider/FileProvider";
 import {KeywordProvider} from "@/app/provider/KeywordProvider";
 import {ResultProvider} from "@/app/provider/ResultProvider";
 import {ComposedFileProvider} from "@/app/provider/ComposedFileProvider";

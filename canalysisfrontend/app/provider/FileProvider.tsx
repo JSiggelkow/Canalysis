@@ -16,8 +16,15 @@ export function FileProvider({children}: { children: ReactNode }) {
     const [files, setFiles] = useState<File[]>([]);
 
     const addFiles = (newFiles: File[]) => {
-        setFiles((current) => [...current, ...newFiles]);
-    };
+            setFiles((current) => {
+                const combinedFiles = [...current, ...newFiles];
+                return combinedFiles.filter((file, index, self) =>
+                    index === self.findIndex((t) => (
+                        t.name === file.name
+                    ))
+                );
+            });
+        };
 
     const removeFile = (fileToDelete: File) => {
         setFiles((current) => current.filter((f) => f !== fileToDelete));

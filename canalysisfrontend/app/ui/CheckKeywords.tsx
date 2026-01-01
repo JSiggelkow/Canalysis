@@ -1,89 +1,39 @@
 'use client'
 
 import {
+    Accordion,
+    Badge,
     Button,
     Card,
     Group,
-    Pill,
+    List,
+    rem,
     ScrollArea,
     SemiCircleProgress,
-    TextInput,
+    Tabs,
     Text,
-    Badge,
-    Tabs, Accordion, ThemeIcon, rem, List
+    ThemeIcon
 } from "@mantine/core";
-import {useEffect, useState} from "react";
-import {Keyword} from "@/app/entity/Keyword";
-import api from "@/app/lib/api";
+import {useState} from "react";
 import {notifications} from "@mantine/notifications";
 import {useKeywordContext} from "@/app/provider/KeywordProvider";
-import {useFileContext} from "@/app/provider/FileProvder";
+import {useFileContext} from "@/app/provider/FileProvider";
 import {searchFileForKeywords} from "@/app/lib/PdfSearchService";
 import {IconCheck, IconFileText, IconX} from "@tabler/icons-react";
 import {useResultContext} from "@/app/provider/ResultProvider";
+import {FilesList} from "@/app/ui/FilesList";
+import {EditKeywords} from "@/app/ui/EditKeywords";
 
 export function CheckKeywords() {
 
-    const {keywords, addKeywords, removeKeyword} = useKeywordContext();
-    const {files} = useFileContext();
-    const {results, addResult, removeResult, clearResults} = useResultContext();
+    const {files, removeFile} = useFileContext();
+    const {keywords} = useKeywordContext();
+    const {results, addResult, clearResults} = useResultContext();
 
-    const [inputValue, setInputValue] = useState<string>("");
-    const [error, setError] = useState<boolean>(false);
     const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
     const [analysisStatus, setAnalysisStatus] = useState<string>(results.length > 0 ? "finished" : "off")
     const [currentFile, setCurrentFile] = useState<File | null>(null);
     const [activeTab, setActiveTab] = useState<string | null>(results.length > 0 ? "results" : "keywords");
-
-    useEffect(() => {
-        const fetchKeywords = async () => {
-            try {
-                const response = await api.get<Keyword[]>('/keywords')
-                addKeywords(response.data)
-            } catch (e) {
-                notifications.show({
-                    title: 'Error',
-                    message: 'Failed to fetch keywords',
-                    color: 'red'
-                })
-            }
-        }
-
-        fetchKeywords().then();
-    }, []);
-
-    function textInputChangeEvent(val: string) {
-        setInputValue(val);
-        setError(keywords.some(keyword => keyword.keyword === val.trim()));
-    }
-
-    async function addKeyword(keyword: string, language: string) {
-        if (keyword.trim().length === 0) return;
-        try {
-            const response = await api.post<Keyword>('/keywords', {keyword, language})
-            addKeywords([response.data]);
-            setInputValue("");
-        } catch (e) {
-            notifications.show({
-                title: 'Error',
-                message: 'Failed to add keyword',
-                color: 'red'
-            })
-        }
-    }
-
-    async function deleteKeyword(keyword: Keyword) {
-        try {
-            await api.delete(`/keywords/${keyword.keyword}`)
-            removeKeyword(keyword);
-        } catch (e) {
-            notifications.show({
-                title: 'Error',
-                message: 'Failed to remove keyword',
-                color: 'red'
-            })
-        }
-    }
 
     const onCheckKeywords = async () => {
         setActiveTab("results");
@@ -126,40 +76,18 @@ export function CheckKeywords() {
 
             <Tabs value={activeTab} onChange={setActiveTab} className="flex-1 flex flex-col min-h-0 h-full" variant="outline" radius="md">
                 <Tabs.List justify="center">
-                    <Tabs.Tab value="keywords">Keywords</Tabs.Tab>
-                    <Tabs.Tab value="results" disabled={analysisStatus === 'off'}>Results</Tabs.Tab>
+                    <Tabs.Tab value="files">files</Tabs.Tab>
+                    <Tabs.Tab value="keywords">keywords</Tabs.Tab>
+                    <Tabs.Tab value="results" disabled={analysisStatus === 'off'}>results</Tabs.Tab>
                 </Tabs.List>
+                <Tabs.Panel value="files" className="flex-1 flex flex-col h-full min-h-0 p-4">
+                    <ScrollArea className="flex-1 min-h-0 w-full mx-auto xl:w-4xl lg:w-2xl p-2">
+                        <FilesList files={files} removeFile={removeFile} />
+                    </ScrollArea>
+                </Tabs.Panel>
 
                 <Tabs.Panel value="keywords" className="flex-1 flex flex-col h-full min-h-0 p-4">
-                    <ScrollArea className="flex-1 min-h-0 w-full mx-auto xl:w-4xl lg:w-2xl p-2">
-                        <div className="flex flex-wrap gap-2">
-                            {keywords.map((keyword) => (
-                                <Pill
-                                    size="sm"
-                                    key={keyword.keyword}
-                                    withRemoveButton
-                                    onRemove={() => deleteKeyword(keyword)}
-                                >
-                                    {keyword.keyword}
-                                </Pill>
-                            ))}
-                            {keywords.length === 0 && <Text c="dimmed" size="sm" ta="center" w="100%">No keywords added yet.</Text>}
-                        </div>
-                    </ScrollArea>
-
-                    <div className="w-1/2 mx-auto m-2 flex-shrink-0">
-                        <TextInput
-                            variant="filled"
-                            size="lg"
-                            radius="md"
-                            placeholder="Add keywords (Press Enter)"
-                            value={inputValue}
-                            error={error}
-                            disabled={isAnalyzing}
-                            onChange={(event) => textInputChangeEvent(event.currentTarget.value)}
-                            onKeyDown={(event) => (event.key === 'Enter') && !error && addKeyword(inputValue, "en")}/>
-                        {<span className={`text-red-500 ${error ? '' : 'invisible'}`}>Keyword already exists</span>}
-                    </div>
+                    <EditKeywords />
                 </Tabs.Panel>
 
                 <Tabs.Panel value="results" className="flex-1 flex h-full flex-col min-h-0 p-2">
