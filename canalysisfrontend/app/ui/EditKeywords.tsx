@@ -21,8 +21,8 @@ export function EditKeywords() {
                 addKeywords(response.data)
             } catch (e) {
                 notifications.show({
-                    title: 'Error',
-                    message: 'Failed to fetch keywords',
+                    title: 'error',
+                    message: 'failed to fetch keywords',
                     color: 'red'
                 })
             }

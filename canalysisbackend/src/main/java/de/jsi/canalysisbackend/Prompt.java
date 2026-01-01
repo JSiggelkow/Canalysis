@@ -14,6 +14,9 @@ public class Prompt {
 	@Column(name = "id", nullable = false)
 	private Long id;
 
+	@Column(name = "name", nullable = false, unique = true)
+	private String name;
+
 	@Column(name = "prompt", nullable = false, length = Integer.MAX_VALUE)
 	private String prompt;
 

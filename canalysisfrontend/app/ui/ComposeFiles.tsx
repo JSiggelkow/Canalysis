@@ -1,21 +1,16 @@
 'use client'
 
-import {
-    Accordion,
-    Badge,
-    Button,
-    Card,
-    Group,
-    List,
-    rem, RingProgress,
-    ScrollArea,
-    SemiCircleProgress,
-    Tabs,
-    Text,
-    ThemeIcon
-} from "@mantine/core";
+import {Badge, Button, Card, Group, RingProgress, ScrollArea, SemiCircleProgress, Tabs, Text} from "@mantine/core";
 import {useState} from "react";
-import {IconCheck, IconDownload, IconFileText, IconX} from "@tabler/icons-react";
+import {
+    IconBook,
+    IconBook2,
+    IconBookFilled, IconBookmarkAi, IconBookOff,
+    IconBooks, IconBookUpload, IconBrandPagekit,
+    IconDownload, IconFiles, IconFileSad,
+    IconFileText, IconFileTextFilled, IconFileTextSpark,
+    IconPageBreak
+} from "@tabler/icons-react";
 import {useResultContext} from "@/app/provider/ResultProvider";
 import {composeFilesService} from "@/app/lib/ComposeFilesService";
 import {ComposeStatus} from "@/app/entity/ComposeStatus";
@@ -69,7 +64,7 @@ export function ComposeFiles() {
                     onClick={handleCompose}
                     size="xl"
                     fullWidth>
-                    Compose
+                    compose
                 </Button>
             </div>
 
@@ -77,8 +72,8 @@ export function ComposeFiles() {
                   variant="outline" radius="md">
                 <Tabs.List justify="center">
                     <Tabs.Tab value="files">files</Tabs.Tab>
-                    <Tabs.Tab value="Files to Compose">Files to Compose</Tabs.Tab>
-                    <Tabs.Tab value="Composed Files">Composed File</Tabs.Tab>
+                    <Tabs.Tab value="Files to Compose">files to compose</Tabs.Tab>
+                    <Tabs.Tab value="Composed Files">composed file</Tabs.Tab>
                 </Tabs.List>
                 <Tabs.Panel value="files" className="flex-1 flex flex-col h-full min-h-0 p-4">
                     <ScrollArea className="flex-1 min-h-0 w-full mx-auto xl:w-4xl lg:w-2xl p-2">
@@ -96,8 +91,8 @@ export function ComposeFiles() {
                                     <div className="flex flex-row gap-2">
                                         <IconFileText size={24} className="text-gray-500"/>
                                         <Text w={600} truncate="end">{
-                                            isComposing && composeStatus ? "Composing File: " + composeStatus.currentFileName :
-                                                !isComposing && composeStatus && composeStatus.status === "completed" ? "Created: " + composedFile?.name : "Click Compose to start composing files."
+                                            isComposing && composeStatus ? "composing file: " + composeStatus.currentFileName :
+                                                !isComposing && composeStatus && composeStatus.status === "completed" ? "created: " + composedFile?.name : "click compose to start composing files."
                                         }</Text>
                                     </div>
                                     <div className="flex flex-row gap-2">
@@ -126,9 +121,7 @@ export function ComposeFiles() {
                                         size={120}
                                         thickness={12}
                                         label={
-                                            <Text size="md" ta="center" px="xs" style={{pointerEvents: "none"}}>
-                                                Pages
-                                            </Text>
+                                            <IconFileText size={33} className="mx-auto text-gray-500" />
                                         }
                                         sections={[
                                             {
@@ -152,7 +145,7 @@ export function ComposeFiles() {
                                         disabled={composeStatus?.status !== "completed" || isComposing || !composeStatus}
                                         onClick={() => downloadFile()}
                                         rightSection={<IconDownload size={18}/>}
-                                    >Download</Button>
+                                    >download</Button>
 
                                 </Group>
                             </Card.Section>

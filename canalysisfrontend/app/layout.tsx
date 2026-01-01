@@ -10,6 +10,7 @@ import {FileProvider} from "@/app/provider/FileProvider";
 import {KeywordProvider} from "@/app/provider/KeywordProvider";
 import {ResultProvider} from "@/app/provider/ResultProvider";
 import {ComposedFileProvider} from "@/app/provider/ComposedFileProvider";
+import {PromptProvider} from "@/app/provider/PromptProvider";
 
 export const metadata: Metadata = {
     title: "Canalysis",
@@ -34,7 +35,9 @@ export default function RootLayout({
                 <KeywordProvider>
                     <ResultProvider>
                         <ComposedFileProvider>
-                            {children}
+                            <PromptProvider>
+                                {children}
+                            </PromptProvider>
                         </ComposedFileProvider>
                     </ResultProvider>
                 </KeywordProvider>

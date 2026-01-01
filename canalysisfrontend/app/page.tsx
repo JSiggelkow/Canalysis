@@ -7,6 +7,7 @@ import {CheckKeywords} from "@/app/ui/CheckKeywords";
 import {useResultContext} from "@/app/provider/ResultProvider";
 import {ComposeFiles} from "@/app/ui/ComposeFiles";
 import {useComposedFileContext} from "@/app/provider/ComposedFileProvider";
+import {AnalyzeComposedFile} from "@/app/ui/AnalyzeComposedFile";
 
 export default function Home() {
 
@@ -45,7 +46,7 @@ export default function Home() {
                             <ComposeFiles/>
                         </Stepper.Step>
                         <Stepper.Step label="step 4" description="analyze composed file" allowStepSelect={isStep1Valid && isStep2Valid && isStep3Valid}>
-
+                            <AnalyzeComposedFile />
                         </Stepper.Step>
                         <Stepper.Completed>
                             Completed, click back button to get to step 1
