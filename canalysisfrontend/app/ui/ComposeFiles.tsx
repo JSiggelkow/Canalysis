@@ -21,10 +21,13 @@ import {composeFilesService} from "@/app/lib/ComposeFilesService";
 import {ComposeStatus} from "@/app/entity/ComposeStatus";
 import {useComposedFileContext} from "@/app/provider/ComposedFileProvider";
 import {KeywordSearchResultList} from "@/app/ui/KeywordSearchResultList";
+import {FilesList} from "@/app/ui/FilesList";
+import {useFileContext} from "@/app/provider/FileProvider";
 
 export function ComposeFiles() {
 
     const {results} = useResultContext();
+    const {files, removeFile} = useFileContext();
     const {composedFile, setComposedFile, composeStatus, setComposeStatus} = useComposedFileContext();
 
     const [activeTab, setActiveTab] = useState<string | null>(composeStatus != undefined ? "Composed Files" : "Files to Compose");
@@ -73,11 +76,17 @@ export function ComposeFiles() {
             <Tabs value={activeTab} onChange={setActiveTab} className="flex-1 flex flex-col min-h-0 h-full"
                   variant="outline" radius="md">
                 <Tabs.List justify="center">
+                    <Tabs.Tab value="files">files</Tabs.Tab>
                     <Tabs.Tab value="Files to Compose">Files to Compose</Tabs.Tab>
                     <Tabs.Tab value="Composed Files">Composed File</Tabs.Tab>
                 </Tabs.List>
+                <Tabs.Panel value="files" className="flex-1 flex flex-col h-full min-h-0 p-4">
+                    <ScrollArea className="flex-1 min-h-0 w-full mx-auto xl:w-4xl lg:w-2xl p-2">
+                        <FilesList files={files} removeFile={removeFile}/>
+                    </ScrollArea>
+                </Tabs.Panel>
                 <Tabs.Panel value="Files to Compose" className="flex-1 flex flex-col h-full min-h-0 pt-4">
-                    <KeywordSearchResultList preSetOnlyMatches={true} />
+                    <KeywordSearchResultList preSetOnlyMatches={true}/>
                 </Tabs.Panel>
                 <Tabs.Panel value="Composed Files" className="flex-1 flex h-full flex-col min-h-0 p-2">
                     <div className="flex-shrink-0 min-h-0 w-full xl:w-4xl lg:w-2xl mx-auto m-2">
