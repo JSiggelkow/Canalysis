@@ -169,7 +169,7 @@ export function EditPrompts() {
                             value={newPromptValue}
                             onChange={(e) => setNewPromptValue(e.currentTarget.value)}
                         />
-                        <Button onClick={addNewPrompt} variant="filled" size="sm" color="blue"
+                        <Button onClick={addNewPrompt} disabled={!newPromptName || !newPromptValue} variant="filled" size="sm" color="blue"
                                 leftSection={<IconPlus size={18}/>}>add new prompt</Button>
                     </Flex>
                 </Modal>
