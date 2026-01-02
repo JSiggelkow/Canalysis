@@ -26,6 +26,7 @@ export function EditPrompts() {
                 const response = await
                     api.get<Prompt[]>('/prompts')
                 response.data.forEach(p => addPrompt(p));
+                setActivePrompt(response.data[0]);
             } catch (e) {
                 notifications.show({
                     title: 'error',
