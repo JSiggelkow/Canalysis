@@ -2,9 +2,12 @@ import {NextRequest} from "next/server";
 import {OpenAI} from "openai";
 
 
-const client = new OpenAI();
 
 export async function POST(request: NextRequest) {
+
+    const client = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    });
 
     const formData = await request.formData();
     const prompt = formData.get("prompt") as string;
