@@ -1,7 +1,8 @@
 import {Keyword} from "../entity/Keyword";
-import {TextItem} from "pdfjs-dist/types/src/display/api";
+import {TextItem, TextMarkedContent} from "pdfjs-dist/types/src/display/api";
 import {KeywordMatch} from "@/app/entity/KeywordMatch";
 import {KeywordSearchResult} from "@/app/entity/KeywordSearchResult";
+import {KeywordMatchLocation} from "@/app/entity/KeywordMatchLocation";
 
 export const searchFileForKeywords = async (file: File, keywords: Keyword[]): Promise<KeywordSearchResult> => {
     try {
@@ -18,8 +19,12 @@ export const searchFileForKeywords = async (file: File, keywords: Keyword[]): Pr
         const buffer = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument(buffer).promise;
         const foundMatches: Map<string, Set<number>> = new Map();
+        const foundLocations: Map<string, KeywordMatchLocation[]> = new Map();
 
-        keywords.forEach(keyword => foundMatches.set(keyword.keyword.toLowerCase(), new Set()));
+        keywords.forEach(keyword => {
+            foundMatches.set(keyword.keyword.toLowerCase(), new Set())
+            foundLocations.set(keyword.keyword.toLowerCase(), [])
+        });
 
         for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
@@ -40,6 +45,30 @@ export const searchFileForKeywords = async (file: File, keywords: Keyword[]): Pr
 
                     if (regex.test(pageText)) {
                         foundMatches.get(lowerKeyword)?.add(i);
+
+                        textContent.items.forEach((item: TextItem | TextMarkedContent) => {
+                            const textItem = item as TextItem;
+                            if (!textItem.str) return;
+
+                            const normItemStr = textItem.str.toLowerCase().replace(/\s+/g, ' ');
+
+                            // Simple containment check for highlighting
+                            if (normItemStr.includes(searchKeyword)) {
+                                const tx = textItem.transform;
+                                const x = tx[4];
+                                const y = tx[5];
+                                const w = textItem.width;
+                                const h = textItem.height;
+
+                                foundLocations.get(lowerKeyword)?.push({
+                                    pageNumber: i,
+                                    x: x,
+                                    y: y,
+                                    width: w,
+                                    height: h
+                                });
+                            }
+                        });
                     }
                 });
         }
@@ -49,7 +78,8 @@ export const searchFileForKeywords = async (file: File, keywords: Keyword[]): Pr
             const matches: KeywordMatch[] = [];
             foundMatches.forEach((pages, keyword) => pages.size > 0 && matches.push({
                 keyword,
-                pages: Array.from(pages)
+                pages: Array.from(pages),
+                locations: foundLocations.get(keyword)
             }));
 
             return {

@@ -1,5 +1,5 @@
 import {KeywordSearchResult} from "@/app/entity/KeywordSearchResult";
-import {PDFDocument} from "pdf-lib";
+import {PDFDocument, rgb} from "pdf-lib";
 import {ComposeStatus} from "@/app/entity/ComposeStatus";
 
 export const composeFilesService = async (
@@ -52,7 +52,25 @@ export const composeFilesService = async (
 
         if (pageIndices.length > 0) {
             const copiedPages = await mergedPdf.copyPages(sourcePdf, pageIndices);
-            copiedPages.forEach((page) => mergedPdf.addPage(page));
+            copiedPages.forEach((page, index) => {
+                mergedPdf.addPage(page)
+
+                const originalPageNumber = pageIndices[index] + 1;
+                result.matches.forEach(match => {
+                    match.locations?.forEach(loc => {
+                        if (loc.pageNumber === originalPageNumber) {
+                            page.drawRectangle({
+                                x: loc.x,
+                                y: loc.y,
+                                width: loc.width,
+                                height: loc.height,
+                                color: rgb(1, 1, 0),
+                                opacity: 0.4,
+                            })
+                        }
+                    })
+                })
+            });
             totalPagesAdded += copiedPages.length;
         }
 
