@@ -30,7 +30,7 @@ export function ComposeFiles() {
     const {composedFile, setComposedFile, composeStatus, setComposeStatus} = useComposedFileContext();
 
     const [activeTab, setActiveTab] = useState<string | null>(composeStatus != undefined ? "Composed Files" : "Files to Compose");
-    const [composedFileName, setComposedFileName] = useState<string>("composed.pdf");
+    const [composedFileName, setComposedFileName] = useState<string>(composedFile ? composedFile.name : "composed.pdf");
     const [isComposing, setIsComposing] = useState<boolean>(false);
 
     const handleCompose = async () => {
@@ -169,7 +169,9 @@ export function ComposeFiles() {
                                         size={120}
                                         thickness={12}
                                         label={
-                                            <IconFileText size={33} className="mx-auto text-gray-500"/>
+                                            <Tooltip.Floating label={"total pages " + composeStatus?.totalPagesCount}>
+                                                <IconFileText size={33} className="mx-auto text-gray-500"/>
+                                            </Tooltip.Floating>
                                         }
                                         sections={[
                                             {
@@ -177,14 +179,14 @@ export function ComposeFiles() {
                                                     ? (composeStatus.totalPagesAdded / composeStatus.totalPagesCount) * 100
                                                     : 0,
                                                 color: 'blue',
-                                                tooltip: 'Pages added - ' + (composeStatus?.totalPagesAdded || 0)
+                                                tooltip: 'pages added - ' + (composeStatus?.totalPagesAdded || 0)
                                             },
                                             {
                                                 value: composeStatus && composeStatus.totalPagesCount > 0
                                                     ? ((composeStatus.totalPagesCount - composeStatus.totalPagesAdded) / composeStatus.totalPagesCount) * 100
                                                     : 0,
                                                 color: 'gray',
-                                                tooltip: 'Pages skipped - ' + (composeStatus ? composeStatus.totalPagesCount - composeStatus.totalPagesAdded : 0)
+                                                tooltip: 'pages skipped - ' + (composeStatus ? composeStatus.totalPagesCount - composeStatus.totalPagesAdded : 0)
                                             }
                                         ]}></RingProgress>
                                 </Group>

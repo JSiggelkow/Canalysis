@@ -29,17 +29,16 @@ export function CheckKeywords() {
 
     const {files, removeFile} = useFileContext();
     const {keywords} = useKeywordContext();
-    const {results, addResult, clearResults} = useResultContext();
+    const {results, addResult, clearResults, resultAnalysisStatus, setResultAnalysisStatus} = useResultContext();
 
     const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
-    const [analysisStatus, setAnalysisStatus] = useState<string>(results.length > 0 ? "finished" : "off")
     const [currentFile, setCurrentFile] = useState<File | null>(null);
     const [activeTab, setActiveTab] = useState<string | null>(results.length > 0 ? "results" : "keywords");
 
     const onCheckKeywords = async () => {
         setActiveTab("results");
         setIsAnalyzing(true);
-        setAnalysisStatus("running");
+        setResultAnalysisStatus("running");
         clearResults();
 
         const BATCH_SIZE = 3;
@@ -53,7 +52,7 @@ export function CheckKeywords() {
         }
 
         setIsAnalyzing(false);
-        setAnalysisStatus("finished");
+        setResultAnalysisStatus("finished");
         setCurrentFile(null);
 
         notifications.show({
@@ -95,7 +94,7 @@ export function CheckKeywords() {
                 <Tabs.List justify="center">
                     <Tabs.Tab value="files">files</Tabs.Tab>
                     <Tabs.Tab value="keywords">keywords</Tabs.Tab>
-                    <Tabs.Tab value="results" disabled={analysisStatus === 'off'}>results</Tabs.Tab>
+                    <Tabs.Tab value="results" disabled={resultAnalysisStatus === 'off'}>results</Tabs.Tab>
                 </Tabs.List>
                 <Tabs.Panel value="files" className="flex-1 flex flex-col h-full min-h-0 p-4">
                     <ScrollArea className="flex-1 min-h-0 w-full mx-auto xl:w-4xl lg:w-2xl p-2">
@@ -116,13 +115,13 @@ export function CheckKeywords() {
                                         <IconFileText size={24} className="text-gray-500"/>
                                         <Text w={600}
                                               truncate="end">
-                                            {analysisStatus === "finished" ? "click check for keywords to start another analysis"
-                                                : analysisStatus === "off" ? "click check for keywords to start analysis"
-                                                    : analysisStatus === "running" && currentFile ? currentFile.name : ""}</Text>
+                                            {resultAnalysisStatus === "finished" ? "click check for keywords to start another analysis"
+                                                : resultAnalysisStatus === "off" ? "click check for keywords to start analysis"
+                                                    : resultAnalysisStatus === "running" && currentFile ? currentFile.name : ""}</Text>
                                     </Flex>
                                     <Badge
-                                        color={analysisStatus === "off" ? 'gray' : analysisStatus === "running" ? 'blue' : 'green'}
-                                    >{analysisStatus}</Badge>
+                                        color={resultAnalysisStatus === "off" ? 'gray' : resultAnalysisStatus === "running" ? 'blue' : 'green'}
+                                    >{resultAnalysisStatus}</Badge>
                                 </Group>
                                 <Group justify="space-evenly">
                                     <SemiCircleProgress

@@ -8,6 +8,8 @@ interface ResultContextType {
     addResult: (newResult: KeywordSearchResult) => void;
     removeResult: (resultToRemove: KeywordSearchResult) => void;
     clearResults: () => void;
+    resultAnalysisStatus: "off" | "running" | "finished";
+    setResultAnalysisStatus: (newStatus: "off" | "running" | "finished") => void;
 }
 
 const ResultContext = createContext<ResultContextType>({} as ResultContextType);
@@ -15,6 +17,7 @@ const ResultContext = createContext<ResultContextType>({} as ResultContextType);
 export function ResultProvider({children}: { children: ReactNode }) {
 
     const [results, setResults] = useState<KeywordSearchResult[]>([]);
+    const [resultAnalysisStatus, setResultAnalysisStatus] = useState<'off' | 'running' | 'finished'>('off');
 
     const addResult = (newResult: KeywordSearchResult) => {
         setResults((current) => [...current, newResult]);
@@ -26,8 +29,9 @@ export function ResultProvider({children}: { children: ReactNode }) {
         setResults([]);
     };
 
+
     return (
-        <ResultContext.Provider value={{results, addResult, removeResult, clearResults}}>
+        <ResultContext.Provider value={{results, addResult, removeResult, clearResults, resultAnalysisStatus, setResultAnalysisStatus}}>
             {children}
         </ResultContext.Provider>
     )

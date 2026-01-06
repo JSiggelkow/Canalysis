@@ -1,6 +1,6 @@
 import {
     Alert,
-    Badge,
+    Badge, Button,
     Card,
     Center,
     Flex,
@@ -17,7 +17,7 @@ import {
     IconFileText,
     IconFileUpload, IconFlame, IconFlameFilled, IconInfoCircle,
     IconRobotFace, IconSnowflake,
-    IconSparkles, IconTemperatureSnow,
+    IconSparkles,
     IconTrash,
     IconX
 } from "@tabler/icons-react";
@@ -25,12 +25,21 @@ import {useComposedFileContext} from "@/app/provider/ComposedFileProvider";
 import MarkdownPreview from '@uiw/react-markdown-preview';
 import {useAnalysisContext} from "@/app/provider/AnalysisProvider";
 import {usePromptContext} from "@/app/provider/PromptProvider";
+import {useEffect, useRef} from "react";
 
 export function Analysis() {
 
     const {composedFile} = useComposedFileContext();
     const {analysisText, analysisStatus, temperature, setTemperature, model, setModel} = useAnalysisContext();
     const {activePrompt, prompts, setActivePrompt} = usePromptContext()
+
+    const viewport = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (analysisStatus === "responding" && viewport.current) {
+            viewport.current.scrollTo({ top: viewport.current.scrollHeight, behavior: 'smooth' });
+        }
+    }, [analysisText, analysisStatus]);
 
     const badgeIcon = {
         uploading: <IconFileUpload size={20}/>,
@@ -135,7 +144,7 @@ export function Analysis() {
                     </Flex>
                 </Group>
             </Card>
-            <ScrollArea className="flex-1 min-h-0 flex justify-start">
+            <ScrollArea className="flex-1 min-h-0 flex justify-start" viewportRef={viewport}>
                 {renderContent()}
             </ScrollArea>
         </Flex>
