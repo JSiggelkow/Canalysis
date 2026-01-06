@@ -1,16 +1,19 @@
 'use client'
 
-import {Badge, Button, Card, Group, RingProgress, ScrollArea, SemiCircleProgress, Tabs, Text} from "@mantine/core";
-import {useState} from "react";
 import {
-    IconBook,
-    IconBook2,
-    IconBookFilled, IconBookmarkAi, IconBookOff,
-    IconBooks, IconBookUpload, IconBrandPagekit,
-    IconDownload, IconFiles, IconFileSad,
-    IconFileText, IconFileTextFilled, IconFileTextSpark,
-    IconPageBreak
-} from "@tabler/icons-react";
+    Badge,
+    Button,
+    Card,
+    Group,
+    RingProgress,
+    ScrollArea,
+    SemiCircleProgress,
+    Tabs,
+    Text,
+    TextInput, Tooltip
+} from "@mantine/core";
+import {useState} from "react";
+import {IconDownload, IconFileText} from "@tabler/icons-react";
 import {useResultContext} from "@/app/provider/ResultProvider";
 import {composeFilesService} from "@/app/lib/ComposeFilesService";
 import {ComposeStatus} from "@/app/entity/ComposeStatus";
@@ -18,6 +21,7 @@ import {useComposedFileContext} from "@/app/provider/ComposedFileProvider";
 import {KeywordSearchResultList} from "@/app/ui/KeywordSearchResultList";
 import {FilesList} from "@/app/ui/FilesList";
 import {useFileContext} from "@/app/provider/FileProvider";
+import {notifications} from "@mantine/notifications";
 
 export function ComposeFiles() {
 
@@ -26,6 +30,7 @@ export function ComposeFiles() {
     const {composedFile, setComposedFile, composeStatus, setComposeStatus} = useComposedFileContext();
 
     const [activeTab, setActiveTab] = useState<string | null>(composeStatus != undefined ? "Composed Files" : "Files to Compose");
+    const [composedFileName, setComposedFileName] = useState<string>("composed.pdf");
     const [isComposing, setIsComposing] = useState<boolean>(false);
 
     const handleCompose = async () => {
@@ -35,7 +40,17 @@ export function ComposeFiles() {
             const file = await composeFilesService(results.filter(r => r.matches.length > 0), (currentStatus: ComposeStatus) => {
                 setComposeStatus(currentStatus);
             });
+            if (!file) {
+                notifications.show({
+                    title: 'error',
+                    message: 'Failed to compose files.',
+                    color: 'red'
+                })
+                return
+            }
             setComposedFile(file)
+            setComposedFileName(file.name);
+
         } catch (e) {
             console.error(e);
         } finally {
@@ -54,6 +69,22 @@ export function ComposeFiles() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    }
+
+    const updateComposedFileName = () => {
+        if (composedFile === null || composedFile === undefined) return;
+        let newName = composedFileName;
+        if (!newName.toLowerCase().endsWith(".pdf")) {
+            newName += ".pdf";
+        }
+        setComposedFileName(newName)
+        const renamedFile = new File([composedFile], newName, {type: composedFile.type});
+        setComposedFile(renamedFile);
+        notifications.show({
+            title: "success",
+            message: "file renamed successfully.",
+            color: 'teal'
+        })
     }
 
     return (
@@ -88,13 +119,30 @@ export function ComposeFiles() {
                         <Card shadow="sm" radius="md" p="xl">
                             <Card.Section>
                                 <Group justify="space-between" mb="xs">
-                                    <div className="flex flex-row gap-2">
-                                        <IconFileText size={24} className="text-gray-500"/>
-                                        <Text w={600} truncate="end">{
-                                            isComposing && composeStatus ? "composing file: " + composeStatus.currentFileName :
-                                                !isComposing && composeStatus && composeStatus.status === "completed" ? "created: " + composedFile?.name : "click compose to start composing files."
-                                        }</Text>
-                                    </div>
+                                    {
+                                        !isComposing && composedFile && composeStatus && composeStatus.status === "completed" ?
+                                            <Tooltip label="change filename and press enter to save" position="top-start" >
+                                                <TextInput
+                                                    w={600}
+                                                    variant="unstyled"
+                                                    value={composedFileName}
+                                                    onChange={(e) => setComposedFileName(e.target.value)}
+                                                    onKeyDown={(e) => e.key === 'Enter' && updateComposedFileName()}
+                                                    leftSection={
+                                                        <IconFileText size={24} className="text-gray-500"/>
+                                                    }
+                                                />
+                                            </Tooltip> :
+                                            <div className="flex flex-row gap-2">
+                                                <IconFileText size={24} className="text-gray-500"/>
+                                                <Text w={600} truncate="end">{
+                                                    isComposing && composeStatus ? "composing file: " + composeStatus.currentFileName
+                                                        : "click compose to start composing files."
+                                                }</Text>
+                                            </div>
+                                    }
+
+
                                     <div className="flex flex-row gap-2">
                                         <Badge
                                             color={
@@ -121,7 +169,7 @@ export function ComposeFiles() {
                                         size={120}
                                         thickness={12}
                                         label={
-                                            <IconFileText size={33} className="mx-auto text-gray-500" />
+                                            <IconFileText size={33} className="mx-auto text-gray-500"/>
                                         }
                                         sections={[
                                             {
