@@ -4,19 +4,24 @@ import {OpenAI} from "openai";
 
 export async function POST(request: NextRequest) {
 
-    const client = new OpenAI(
-        {apiKey: process.env.OPENAI_API_KEY},
-    );
+    try {
+        const client = new OpenAI(
+            {apiKey: process.env.OPENAI_API_KEY},
+        );
 
-    const formData = await request.formData();
-    const filePart = formData.get("file") as File;
+        const formData = await request.formData();
+        const filePart = formData.get("file") as File;
 
-    const file = await client.files.create({
-        file: filePart,
-        purpose: "user_data"
-    })
+        const file = await client.files.create({
+            file: filePart,
+            purpose: "user_data"
+        })
 
-    return NextResponse.json({id: file.id}, {status: 200});
+        return NextResponse.json({id: file.id}, {status: 200});
+    } catch (e: any) {
+        console.error(e);
+        return NextResponse.json({error: e.message || "Upload failed"}, {status: 500});
+    }
 }
 
 export async function DELETE(request: NextRequest) {

@@ -31,15 +31,26 @@ export function AnalyzeComposedFile() {
     const uploadFile = async () => {
         if (!composedFile) return;
         setAnalysisStatus("uploading")
-        const formData = new FormData();
-        formData.append("file", composedFile);
-        const response = await fetch("/api/file", {
-            method: "POST",
-            body: formData,
-        });
-        const json = await response.json();
-        setAnalysisFileId(json.id);
-        return json.id;
+        try {
+            const formData = new FormData();
+            formData.append("file", composedFile);
+            const response = await fetch("/api/file", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error(`Upload failed: ${response.statusText}`);
+            }
+
+            const json = await response.json();
+            setAnalysisFileId(json.id);
+            return json.id;
+        } catch (e) {
+            console.error("File upload error:", e);
+            setAnalysisStatus("failed");
+            return undefined;
+        }
     }
 
     const deleteFile = async (id: string) => {
