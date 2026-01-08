@@ -1,6 +1,18 @@
 'use client'
 
-import {Accordion, Badge, Button, Flex, Group, Modal, NativeSelect, Text, Textarea, TextInput} from "@mantine/core";
+import {
+    Accordion,
+    Badge,
+    Button,
+    Flex,
+    Group,
+    Modal,
+    NativeSelect,
+    ScrollArea,
+    Text,
+    Textarea,
+    TextInput
+} from "@mantine/core";
 import {useEffect, useMemo, useState} from "react";
 import {Prompt} from "@/app/entity/Prompt";
 import api from "../lib/api";
@@ -66,7 +78,7 @@ export function EditPrompts() {
     }
 
     const deletePrompt = async (prompt: Prompt) => {
-        try{
+        try {
             await api.delete(`/prompts/${prompt.id}`)
             removePrompt(prompt);
             notifications.show({
@@ -84,8 +96,8 @@ export function EditPrompts() {
     }
 
     const filteredPrompts = useMemo(() => {
-            return prompts.filter(p => p.name.toLowerCase().startsWith(searchValue.toLowerCase()));
-        }, [prompts, searchValue]);
+        return prompts.filter(p => p.name.toLowerCase().startsWith(searchValue.toLowerCase()));
+    }, [prompts, searchValue]);
 
     const promptItems = filteredPrompts.map(prompt => {
         const isActive = activePrompt?.id === prompt.id;
@@ -106,10 +118,10 @@ export function EditPrompts() {
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     if (isActive) {
-                                            setActivePrompt(null);
-                                        } else {
-                                            setActivePrompt(prompt);
-                                        }
+                                        setActivePrompt(null);
+                                    } else {
+                                        setActivePrompt(prompt);
+                                    }
                                 }}
                             >{isActive ? "active" : "select"}</Button>
                             <Button
@@ -128,14 +140,18 @@ export function EditPrompts() {
                         </Group>
                     </Group>
                 </Accordion.Control>
-                <Accordion.Panel>{prompt.prompt}</Accordion.Panel>
+                <Accordion.Panel>
+                    <ScrollArea.Autosize mah={300} type="auto" offsetScrollbars>
+                        {prompt.prompt}
+                    </ScrollArea.Autosize>
+                </Accordion.Panel>
             </Accordion.Item>
         )
     })
 
 
     return (
-        <Flex direction="column" className="flex-1  xl:w-4xl lg:w-2xl h-full mx-auto">
+        <Flex direction="column" className="flex-1 h-full xl:w-4xl lg:w-2xl mx-auto">
             <Flex justify="space-between" align="center" gap="sm" className="mb-2">
                 <TextInput
                     placeholder="search prompts"
@@ -169,19 +185,22 @@ export function EditPrompts() {
                             value={newPromptValue}
                             onChange={(e) => setNewPromptValue(e.currentTarget.value)}
                         />
-                        <Button onClick={addNewPrompt} disabled={!newPromptName || !newPromptValue} variant="filled" size="sm" color="blue"
+                        <Button onClick={addNewPrompt} disabled={!newPromptName || !newPromptValue} variant="filled"
+                                size="sm" color="blue"
                                 leftSection={<IconPlus size={18}/>}>add new prompt</Button>
                     </Flex>
                 </Modal>
                 <Button onClick={open} variant="filled" size="sm" color="blue" leftSection={<IconPlus size={18}/>}>new
                     prompt</Button>
             </Flex>
-            <Accordion variant="separated" radius="md" className="pb-8">
-                {prompts.length === 0 ? <Group align="center" justify="center" mt="xl" >
-                    <IconMoodSad2 size={18} className="text-gray-500" />
-                    <Text>no prompts added yet</Text>
-                </Group> : promptItems}
-            </Accordion>
+            <ScrollArea className="flex-1 min-h-0 w-full mx-auto xl:w-4xl lg:w-2xl p-2">
+                <Accordion variant="separated" radius="md" className="pb-8 h-full">
+                    {prompts.length === 0 ? <Group align="center" justify="center" mt="xl">
+                        <IconMoodSad2 size={18} className="text-gray-500"/>
+                        <Text>no prompts added yet</Text>
+                    </Group> : promptItems}
+                </Accordion>
+            </ScrollArea>
         </Flex>
     )
 
