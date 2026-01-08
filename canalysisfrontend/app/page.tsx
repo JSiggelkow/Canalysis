@@ -10,6 +10,8 @@ import {useComposedFileContext} from "@/app/provider/ComposedFileProvider";
 import {AnalyzeComposedFile} from "@/app/ui/AnalyzeComposedFile";
 import {useAnalysisContext} from "@/app/provider/AnalysisProvider";
 import {downloadPdf} from "@/app/lib/PdfDownloadService";
+import downloadAnalysedPdf from "@/app/lib/MarkdownToPdfService";
+import {notifications} from "@mantine/notifications";
 
 export default function Home() {
 
@@ -33,9 +35,22 @@ export default function Home() {
 
     const handleDownload = async () => {
         if (!analysisText || !composedFile) return;
+
         setIsDownloading(true);
-        await downloadPdf(analysisText, `analysed-${composedFile.name}`)
-        setIsDownloading(false);
+        try {
+            await downloadAnalysedPdf(
+                analysisText,
+                `analysed-${composedFile.name}`
+            );
+        } catch (error) {
+            notifications.show({
+                title: 'error',
+                message: 'could not download analysis pdf.',
+                color: 'red'
+            })
+        } finally {
+            setIsDownloading(false);
+        }
     }
 
     const restart = () => {
