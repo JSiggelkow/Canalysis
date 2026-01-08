@@ -1,7 +1,6 @@
 // services/pdfService.ts
 import { PDFDocument } from 'pdf-lib';
 import { marked } from 'marked';
-import html2pdf from 'html2pdf.js';
 
 const PDF_STYLES = `
     /* Basis-Styles */
@@ -59,10 +58,12 @@ async function createPdfBufferFromMarkdown(markdownText: string): Promise<ArrayB
     const opt = {
         margin:       0,
         filename:     'temp.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
+        image:        { type: 'jpeg' as const, quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
     };
+
+    const html2pdf = (await import('html2pdf.js')).default;
 
     return await html2pdf().set(opt).from(element).output('arraybuffer');
 }
@@ -79,7 +80,7 @@ export default async function downloadAnalysedPdf(
 
         const pdfBytes = await analysisPdfDoc.save();
 
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
         const link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
         link.download = outputFilename.endsWith('.pdf') ? outputFilename : `${outputFilename}.pdf`;
