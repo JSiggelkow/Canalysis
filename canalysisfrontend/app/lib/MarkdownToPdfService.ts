@@ -3,7 +3,6 @@ import { PDFDocument } from 'pdf-lib';
 import { marked } from 'marked';
 
 const PDF_STYLES = `
-    /* Basis-Styles */
     body { font-family: Helvetica, Arial, sans-serif; font-size: 12px; line-height: 1.5; color: #333; }
     h1 { font-size: 18px; color: #000; margin-bottom: 10px; font-weight: bold; }
     h2 { font-size: 16px; margin-top: 20px; margin-bottom: 10px; font-weight: bold; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
@@ -16,13 +15,13 @@ const PDF_STYLES = `
     blockquote { border-left: 4px solid #ccc; margin: 10px 0; padding-left: 10px; color: #666; font-style: italic; }
     table {
         width: 100%;
-        border-collapse: collapse; /* Wichtig für saubere Rahmen */
+        border-collapse: collapse; 
         margin-bottom: 15px;
         background-color: #ffffff;
-        font-size: 11px; /* Etwas kleinerer Text in Tabellen spart Platz */
+        font-size: 11px; 
     }
     th {
-        background-color: #f2f2f2; /* Hellgrauer Hintergrund für Header */
+        background-color: #f2f2f2; 
         font-weight: bold;
         text-align: left;
         color: #333;
@@ -44,22 +43,40 @@ const PDF_STYLES = `
 `;
 
 
+function preprocessMarkdown(text: string): string {
+    if (!text) return "";
+
+    let cleanText = text.replace(/([^\n])\n(\|)/g, '$1\n\n$2');
+
+    cleanText = cleanText.replace(/([^\n])\n(#)/g, '$1\n\n$2');
+
+    return cleanText;
+}
+
+
 async function createPdfBufferFromMarkdown(markdownText: string): Promise<ArrayBuffer> {
-    const htmlContent = await marked.parse(markdownText);
+    const cleanedMarkdown = preprocessMarkdown(markdownText);
+
+    marked.use({
+        gfm: true,
+        breaks: true,
+    });
+
+    const htmlContent = await marked.parse(cleanedMarkdown);
 
     const element = document.createElement('div');
     element.innerHTML = `
         <style>${PDF_STYLES}</style>
-        <div style="padding: 40px;">
+        <div style="padding: 20px 40px;">
             ${htmlContent}
         </div>
     `;
 
     const opt = {
-        margin:       0,
+        margin:       [10, 0, 10, 0] as [number, number, number, number],
         filename:     'temp.pdf',
         image:        { type: 'jpeg' as const, quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
+        html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
     };
 
