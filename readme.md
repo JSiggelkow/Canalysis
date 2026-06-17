@@ -9,7 +9,7 @@ or bring your own prompts and let the AI work the way you need it to.
 2. Clone the repository: https://github.com/JSiggelkow/Canalysis
 3. Create ```.env``` file in root directory
 4. Add your OpenAI API key to ```.env``` file: ```OPENAI_API_KEY=```
-5. Crate DB Password in ```.env``` file: ```DB_PASSWORD=```
+5. Crate DB Password in ```.env``` file: ```POSTGRES_PASSWORD=```
 6. Run ```docker-compose up```
 
 ## Usage Guide
